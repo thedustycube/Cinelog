@@ -1,0 +1,217 @@
+package com.cubedusty.cinelog.ui.components
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.cubedusty.cinelog.domain.model.UserWatchItem
+import com.cubedusty.cinelog.domain.model.WatchStatus
+
+@Composable
+fun CardPoster(
+    item: UserWatchItem,
+    onUpdateStatusRequest: (UserWatchItem, WatchStatus) -> Unit
+) {
+    var showMenu by remember { mutableStateOf(false) }
+    Box {
+        Image(
+            painter = painterResource(item.posterUrl),
+            contentDescription = item.title
+        )
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .clip(
+                    RoundedCornerShape(
+                        bottomStart = 8.dp
+                    )
+                )
+                .background(Color(0xFFE8E2DB))
+                .padding(2.dp)
+                .clickable { showMenu = true }
+        ) {
+            Icon(
+                imageVector = item.watchStatus.icon,
+                contentDescription = item.watchStatus.name
+            )
+            DropdownMenu(
+                modifier = Modifier,
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false }
+            ) {
+                WatchStatus.entries.forEach { status ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(status.name)
+                        },
+                        onClick = {
+                            onUpdateStatusRequest(item, status)
+                            showMenu = false
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CardTitle(
+    item: UserWatchItem
+) {
+    Row(
+        modifier = Modifier
+            .height(40.dp)
+            .fillMaxWidth()
+            .background(Color.Gray)
+    ) {
+        Text(
+            modifier = Modifier.padding(start = 4.dp, top = 4.dp),
+            text = item.title,
+            fontWeight = FontWeight.SemiBold
+        )
+    }
+}
+
+@Composable
+fun CardBuilder(
+    item: UserWatchItem,
+    onUpdateStatusRequest: (UserWatchItem, WatchStatus) -> Unit,
+    isHorizontal: Boolean
+) {
+    if(isHorizontal) {
+        Card(
+            modifier = Modifier
+                .wrapContentHeight()
+                .width(120.dp)
+        ) {
+            CardPoster(item, onUpdateStatusRequest)
+            CardTitle(item)
+        }
+        Spacer(modifier = Modifier.width(4.dp))
+    } else {
+        Card(
+            modifier = Modifier
+                .wrapContentHeight()
+                .width(120.dp)
+        ) {
+            CardPoster(item, onUpdateStatusRequest)
+            CardTitle(item)
+        }
+    }
+}
+
+@Composable
+fun BannerHeader(
+    bannerName: String
+) {
+    Row(
+        modifier = Modifier
+            .wrapContentHeight()
+            .background(Color(0xFF547792))
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            modifier = Modifier.padding(start = 4.dp),
+            text = bannerName,
+            fontWeight = FontWeight.SemiBold
+        )
+        IconButton(
+            onClick = {  }
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = "View all"
+            )
+        }
+    }
+}
+
+@Composable
+fun HorizontalList(
+    bannerName: String,
+    watchItems: List<UserWatchItem>,
+    onUpdateStatusRequest: (UserWatchItem, WatchStatus) -> Unit
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        BannerHeader(bannerName)
+        LazyRow(
+            modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+        ) {
+            items(watchItems) { item ->
+                CardBuilder(item, onUpdateStatusRequest, true)
+            }
+        }
+    }
+}
+
+@Composable
+fun VerticalList(
+    bannerName: String,
+    watchItems: List<UserWatchItem>,
+    onUpdateStatusRequest: (UserWatchItem, WatchStatus) -> Unit
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        BannerHeader(bannerName)
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            modifier = Modifier.padding(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            items(watchItems) { item ->
+                CardBuilder(item, onUpdateStatusRequest, false)
+            }
+        }
+    }
+}
+
+@Composable
+fun BannerAndCardBuilder(
+    bannerName: String,
+    watchItems: List<UserWatchItem>,
+    onUpdateStatusRequest: (UserWatchItem, WatchStatus) -> Unit,
+    isHorizontal: Boolean = true
+) {
+    if(isHorizontal) HorizontalList(bannerName, watchItems, onUpdateStatusRequest)
+    else VerticalList(bannerName, watchItems, onUpdateStatusRequest)
+}
