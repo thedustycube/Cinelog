@@ -1,6 +1,7 @@
 package com.dustycube.cinelog.di
 
 import com.dustycube.cinelog.data.api.TMDBApiService
+import com.dustycube.cinelog.data.local.WatchlistDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,7 +27,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRepository(api: TMDBApiService): RepositoryModule {
-        return RepositoryModule(api)
+    fun provideRepository(api: TMDBApiService, dao: WatchlistDao): RepositoryModule { // added dao parameter
+        return RepositoryModule(api, dao)
     }
 }

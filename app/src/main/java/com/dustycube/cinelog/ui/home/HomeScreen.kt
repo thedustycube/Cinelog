@@ -24,6 +24,7 @@ import com.dustycube.cinelog.ui.components.BannerAndCardBuilder
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
+    val watchlist by viewModel.watchlist.collectAsState()
     val trendingMovies by viewModel.trendingMovies.collectAsState()
     val trendingTvShows by viewModel.trendingTvShows.collectAsState()
 
@@ -36,9 +37,11 @@ fun HomeScreen(
             Text(text = "Fetching trending movies and shows...")
             CircularProgressIndicator()
         } else {
-            BannerAndCardBuilder("Trending Movies", trendingMovies)
+            BannerAndCardBuilder("Watchlist", watchlist, viewModel::onUpdateWatchStatus)
             Spacer(modifier = Modifier.height(48.dp))
-            BannerAndCardBuilder("Trending TV Shows", trendingTvShows)
+            BannerAndCardBuilder("Trending Movies", trendingMovies, viewModel::onUpdateWatchStatus)
+            Spacer(modifier = Modifier.height(48.dp))
+            BannerAndCardBuilder("Trending TV Shows", trendingTvShows, viewModel::onUpdateWatchStatus)
         }
     }
 }

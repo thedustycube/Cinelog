@@ -56,7 +56,7 @@ fun isMovieOrTvShow(item: UserWatchItem): String {
 @Composable
 fun CardPoster(
     item: UserWatchItem,
-    // onUpdateStatusRequest: (UserWatchItem, WatchStatus) -> Unit
+    onUpdateWatchStatus: (UserWatchItem, WatchStatus) -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
     val fullImageUrl = "https://image.tmdb.org/t/p/w500${item.poster_path}"
@@ -97,6 +97,7 @@ fun CardPoster(
                             Text(status.name)
                         },
                         onClick = {
+                            onUpdateWatchStatus(item, status)
                             showMenu = false
                         }
                     )
@@ -127,7 +128,7 @@ fun CardTitle(
 @Composable
 fun CardBuilder(
     item: UserWatchItem,
-    // onUpdateStatusRequest: (UserWatchItem, WatchStatus) -> Unit,
+    onUpdateWatchStatus: (UserWatchItem, WatchStatus) -> Unit,
     isHorizontal: Boolean
 ) {
     if(isHorizontal) {
@@ -136,7 +137,7 @@ fun CardBuilder(
                 .height(200.dp)
                 .width(120.dp)
         ) {
-            CardPoster(item)
+            CardPoster(item, onUpdateWatchStatus)
             // CardTitle(item)
         }
         Spacer(modifier = Modifier.width(4.dp))
@@ -146,7 +147,7 @@ fun CardBuilder(
                 .height(240.dp)
                 .width(160.dp)
         ) {
-            CardPoster(item)
+            CardPoster(item, onUpdateWatchStatus)
             // CardTitle(item)
         }
     }
@@ -184,7 +185,7 @@ fun BannerHeader(
 fun HorizontalList(
     bannerName: String,
     watchItems: List<UserWatchItem>,
-    // onUpdateStatusRequest: (UserWatchItem, WatchStatus) -> Unit
+    onUpdateWatchStatus: (UserWatchItem, WatchStatus) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         BannerHeader(bannerName)
@@ -192,7 +193,7 @@ fun HorizontalList(
             modifier = Modifier.padding(start = 4.dp, top = 4.dp)
         ) {
             items(watchItems) { item ->
-                CardBuilder(item, true)
+                CardBuilder(item, onUpdateWatchStatus, true)
             }
         }
     }
@@ -202,7 +203,7 @@ fun HorizontalList(
 fun VerticalList(
     bannerName: String,
     watchItems: List<UserWatchItem>,
-    // onUpdateStatusRequest: (UserWatchItem, WatchStatus) -> Unit
+    onUpdateWatchStatus: (UserWatchItem, WatchStatus) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         BannerHeader(bannerName)
@@ -213,7 +214,7 @@ fun VerticalList(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             items(watchItems) { item ->
-                CardBuilder(item, false)
+                CardBuilder(item, onUpdateWatchStatus, false)
             }
         }
     }
@@ -223,9 +224,9 @@ fun VerticalList(
 fun BannerAndCardBuilder(
     bannerName: String,
     watchItems: List<UserWatchItem>,
-    // onUpdateStatusRequest: (UserWatchItem, WatchStatus) -> Unit,
+    onUpdateWatchStatus: (UserWatchItem, WatchStatus) -> Unit,
     isHorizontal: Boolean = true
 ) {
-    if(isHorizontal) HorizontalList(bannerName, watchItems)
-    else VerticalList(bannerName, watchItems)
+    if(isHorizontal) HorizontalList(bannerName, watchItems, onUpdateWatchStatus)
+    else VerticalList(bannerName, watchItems, onUpdateWatchStatus)
 }

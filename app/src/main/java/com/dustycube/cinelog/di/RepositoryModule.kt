@@ -2,13 +2,19 @@ package com.dustycube.cinelog.di
 
 import com.dustycube.cinelog.BuildConfig
 import com.dustycube.cinelog.data.api.TMDBApiService
+import com.dustycube.cinelog.data.local.WatchlistDao
+import com.dustycube.cinelog.data.local.WatchlistItemEntity
+import com.dustycube.cinelog.data.mapper.toEntity
 import com.dustycube.cinelog.data.models.Movie
 import com.dustycube.cinelog.data.models.TvShow
+import com.dustycube.cinelog.data.models.UserWatchItem
 import com.dustycube.cinelog.data.models.WatchStatus
+import kotlinx.coroutines.flow.Flow
 import java.time.LocalDateTime
 
 class RepositoryModule(
-    private val apiService: TMDBApiService
+    private val apiService: TMDBApiService,
+    private val dao: WatchlistDao
 ) {
     val accessToken = BuildConfig.TMDB_ACCESS_TOKEN
 
@@ -58,5 +64,21 @@ class RepositoryModule(
         } catch (e: Exception) {
             emptyList()
         }
+    }
+
+    fun getWatchlist(): Flow<List<WatchlistItemEntity>> = dao.getFullWatchlist()
+    suspend fun updateWatchStatus(
+        item: UserWatchItem, newStatus: WatchStatus
+    ) {
+        val entity = when(item) {
+            is Movie -> item.toEntity(newStatus)
+            is TvShow -> item.toEntity(newStatus)
+            is WatchlistItemEntity -> item.copy(
+                watchStatus = newStatus,
+                lastUpdatedTimeStamp = LocalDateTime.now()
+            )
+            else -> return
+        }
+        dao.upsertItem(entity)
     }
 }
