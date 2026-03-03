@@ -8,8 +8,16 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WatchlistDao {
-    @Query("SELECT * FROM watchlist ORDER BY lastUpdatedTimeStamp DESC")
+    @Query("SELECT * " +
+            "FROM watchlist " +
+            "ORDER BY lastUpdatedTimeStamp DESC")
     fun getFullWatchlist(): Flow<List<WatchlistItemEntity>>
+
+    @Query("SELECT * " +
+            "FROM watchlist " +
+            "WHERE watchstatus IN ('WATCHING', 'REWATCHING') " +
+            "ORDER BY lastUpdatedTimeStamp DESC")
+    fun getHomeWatchlist(): Flow<List<WatchlistItemEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertItem(item: WatchlistItemEntity)

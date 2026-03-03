@@ -77,7 +77,7 @@ fun CardPoster(
                         bottomStart = 8.dp
                     )
                 )
-                .background(Color(0xFFE8E2DB).copy(alpha = 0.5f))
+                .background(Color(0xFFE8E2DB))
                 .padding(2.dp)
                 .clickable { showMenu = true }
         ) {
