@@ -21,5 +21,6 @@ data class WatchlistItemEntity(
     val title: String?,
     val name: String?,
     val director: String?,
-    val release_date: String?
+    val release_date: String?,
+    val watchStatusOrder: Int
 ) : UserWatchItem

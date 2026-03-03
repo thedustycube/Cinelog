@@ -137,7 +137,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
             composable(
                 Routes.home
             ) {
-                HomeScreen()
+                HomeScreen(navController = navController)
             }
             composable(
                 Routes.watchlist

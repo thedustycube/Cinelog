@@ -144,8 +144,8 @@ fun CardBuilder(
     } else {
         Card(
             modifier = Modifier
-                .height(240.dp)
-                .width(160.dp)
+                .height(200.dp)
+                .width(120.dp)
         ) {
             CardPoster(item, onUpdateWatchStatus)
             // CardTitle(item)
@@ -155,11 +155,13 @@ fun CardBuilder(
 
 @Composable
 fun BannerHeader(
-    bannerName: String
+    bannerName: String,
+    onHeaderClick: () -> Unit,
+    hasIcon: Boolean
 ) {
     Row(
         modifier = Modifier
-            .wrapContentHeight()
+            .height(40.dp)
             .background(Color(0xFF547792))
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -170,13 +172,15 @@ fun BannerHeader(
             text = bannerName,
             fontWeight = FontWeight.SemiBold
         )
-        IconButton(
-            onClick = {  }
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "View all"
-            )
+        if (hasIcon) {
+            IconButton(
+                onClick = onHeaderClick
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = "View all"
+                )
+            }
         }
     }
 }
@@ -185,10 +189,12 @@ fun BannerHeader(
 fun HorizontalList(
     bannerName: String,
     watchItems: List<UserWatchItem>,
-    onUpdateWatchStatus: (UserWatchItem, WatchStatus) -> Unit
+    onUpdateWatchStatus: (UserWatchItem, WatchStatus) -> Unit,
+    onHeaderClick: () -> Unit,
+    hasIcon: Boolean
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        BannerHeader(bannerName)
+        BannerHeader(bannerName, onHeaderClick, hasIcon)
         LazyRow(
             modifier = Modifier.padding(start = 4.dp, top = 4.dp)
         ) {
@@ -203,10 +209,12 @@ fun HorizontalList(
 fun VerticalList(
     bannerName: String,
     watchItems: List<UserWatchItem>,
-    onUpdateWatchStatus: (UserWatchItem, WatchStatus) -> Unit
+    onUpdateWatchStatus: (UserWatchItem, WatchStatus) -> Unit,
+    onHeaderClick: () -> Unit,
+    hasIcon: Boolean
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        BannerHeader(bannerName)
+        BannerHeader(bannerName, onHeaderClick, hasIcon)
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             modifier = Modifier.padding(4.dp),
@@ -225,8 +233,10 @@ fun BannerAndCardBuilder(
     bannerName: String,
     watchItems: List<UserWatchItem>,
     onUpdateWatchStatus: (UserWatchItem, WatchStatus) -> Unit,
-    isHorizontal: Boolean = true
+    onHeaderClick: () -> Unit,
+    isHorizontal: Boolean = true,
+    hasIcon: Boolean = true
 ) {
-    if(isHorizontal) HorizontalList(bannerName, watchItems, onUpdateWatchStatus)
-    else VerticalList(bannerName, watchItems, onUpdateWatchStatus)
+    if(isHorizontal) HorizontalList(bannerName, watchItems, onUpdateWatchStatus, onHeaderClick, hasIcon)
+    else VerticalList(bannerName, watchItems, onUpdateWatchStatus, onHeaderClick, hasIcon)
 }
