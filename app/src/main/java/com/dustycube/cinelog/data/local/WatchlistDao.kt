@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface WatchlistDao {
     @Query("SELECT * " +
             "FROM watchlist " +
-            "ORDER BY lastUpdatedTimeStamp DESC")
+            "ORDER BY watchStatusOrder DESC")
     fun getFullWatchlist(): Flow<List<WatchlistItemEntity>>
 
     @Query("SELECT * " +

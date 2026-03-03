@@ -17,11 +17,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.dustycube.cinelog.switchTab
 import com.dustycube.cinelog.ui.components.BannerAndCardBuilder
+import com.dustycube.cinelog.ui.navigation.Routes
 
-@Preview
+
 @Composable
 fun HomeScreen(
+    navController: NavController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val watchlist by viewModel.watchlist.collectAsState()
@@ -37,12 +42,18 @@ fun HomeScreen(
             Text(text = "Fetching trending movies and shows...")
             CircularProgressIndicator()
         } else {
-            BannerAndCardBuilder("Watchlist", watchlist, viewModel::onUpdateWatchStatus)
+            BannerAndCardBuilder("Watchlist",
+                watchlist,
+                viewModel::onUpdateWatchStatus,
+                onHeaderClick = {
+                    navController.switchTab(Routes.watchlist)
+                }
+            )
             Spacer(modifier = Modifier.height(48.dp))
-            BannerAndCardBuilder("Trending Movies", trendingMovies, viewModel::onUpdateWatchStatus)
-            Spacer(modifier = Modifier.height(48.dp))
-            BannerAndCardBuilder("Trending TV Shows", trendingTvShows, viewModel::onUpdateWatchStatus)
-            Spacer(modifier = Modifier.height(48.dp))
+//            BannerAndCardBuilder("Trending Movies", trendingMovies, viewModel::onUpdateWatchStatus)
+//            Spacer(modifier = Modifier.height(48.dp))
+//            BannerAndCardBuilder("Trending TV Shows", trendingTvShows, viewModel::onUpdateWatchStatus)
+//            Spacer(modifier = Modifier.height(48.dp))
         }
     }
 }

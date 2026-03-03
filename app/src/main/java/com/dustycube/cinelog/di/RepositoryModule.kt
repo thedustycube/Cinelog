@@ -23,9 +23,11 @@ class RepositoryModule(
 
     fun getHomeWatchlist(): Flow<List<WatchlistItemEntity>> = dao.getHomeWatchlist()
 
+    fun getFullWatchlist(): Flow<List<WatchlistItemEntity>> = dao.getFullWatchlist()
+
     fun getTrendingMoviesWithStatus(): Flow<List<Movie>> = combine(
         flow { emit(fetchTrendingMovies()) },
-        getHomeWatchlist()
+        getFullWatchlist()
     ) {
         trendingMovies, watchlist ->
         trendingMovies.map { movie ->
@@ -36,7 +38,7 @@ class RepositoryModule(
 
     fun getTrendingTvShowsWithStatus(): Flow<List<TvShow>> = combine(
         flow { emit(fetchTrendingTvShows()) },
-        getHomeWatchlist()
+        getFullWatchlist()
     ) { trending, watchlist ->
         trending.map { tvShow ->
             val savedItem = watchlist.find { it.id == tvShow.id }

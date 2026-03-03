@@ -21,7 +21,8 @@ fun Movie.toEntity(newStatus: WatchStatus): WatchlistItemEntity {
         watchStatus = newStatus,
         lastUpdatedTimeStamp = LocalDateTime.now(),
         director = this.director,
-        release_date = this.release_date
+        release_date = this.release_date,
+        watchStatusOrder = newStatus.order
     )
 }
 
@@ -40,6 +41,7 @@ fun TvShow.toEntity(newStatus: WatchStatus): WatchlistItemEntity {
         watchStatus = newStatus,
         lastUpdatedTimeStamp = LocalDateTime.now(),
         director = null,
-        release_date = null
+        release_date = null,
+        watchStatusOrder = newStatus.order
     )
 }
