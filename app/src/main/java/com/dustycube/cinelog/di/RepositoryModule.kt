@@ -10,6 +10,9 @@ import com.dustycube.cinelog.data.models.TvShow
 import com.dustycube.cinelog.data.models.UserWatchItem
 import com.dustycube.cinelog.data.models.WatchStatus
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 
 class RepositoryModule(
@@ -17,6 +20,29 @@ class RepositoryModule(
     private val dao: WatchlistDao
 ) {
     val accessToken = BuildConfig.TMDB_ACCESS_TOKEN
+
+    fun getHomeWatchlist(): Flow<List<WatchlistItemEntity>> = dao.getHomeWatchlist()
+
+    fun getTrendingMoviesWithStatus(): Flow<List<Movie>> = combine(
+        flow { emit(fetchTrendingMovies()) },
+        getHomeWatchlist()
+    ) {
+        trendingMovies, watchlist ->
+        trendingMovies.map { movie ->
+            val savedItem = watchlist.find { it.id == movie.id }
+            movie.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
+        }
+    }
+
+    fun getTrendingTvShowsWithStatus(): Flow<List<TvShow>> = combine(
+        flow { emit(fetchTrendingTvShows()) },
+        getHomeWatchlist()
+    ) { trending, watchlist ->
+        trending.map { tvShow ->
+            val savedItem = watchlist.find { it.id == tvShow.id }
+            tvShow.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
+        }
+    }
 
     suspend fun fetchTrendingMovies(): List<Movie> {
         return try {
@@ -66,7 +92,6 @@ class RepositoryModule(
         }
     }
 
-    fun getWatchlist(): Flow<List<WatchlistItemEntity>> = dao.getFullWatchlist()
     suspend fun updateWatchStatus(
         item: UserWatchItem, newStatus: WatchStatus
     ) {
@@ -79,6 +104,7 @@ class RepositoryModule(
             )
             else -> return
         }
-        dao.upsertItem(entity)
+        if (newStatus != WatchStatus.NONE) dao.upsertItem(entity)
+        else dao.removeFromWatchlist(item.id)
     }
 }

@@ -42,6 +42,7 @@ fun HomeScreen(
             BannerAndCardBuilder("Trending Movies", trendingMovies, viewModel::onUpdateWatchStatus)
             Spacer(modifier = Modifier.height(48.dp))
             BannerAndCardBuilder("Trending TV Shows", trendingTvShows, viewModel::onUpdateWatchStatus)
+            Spacer(modifier = Modifier.height(48.dp))
         }
     }
 }
