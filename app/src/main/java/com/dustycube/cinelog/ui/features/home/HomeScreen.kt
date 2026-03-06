@@ -1,4 +1,4 @@
-package com.dustycube.cinelog.ui.home
+package com.dustycube.cinelog.ui.features.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -14,19 +14,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.dustycube.cinelog.switchTab
 import com.dustycube.cinelog.ui.components.BannerAndCardBuilder
-import com.dustycube.cinelog.ui.navigation.Routes
 
 
 @Composable
 fun HomeScreen(
-    navController: NavController,
+    onNavigateToWatchlist: () -> Unit,
+    onNavigateToTrendingMovies: () -> Unit,
+    onNavigateToTrendingTvShows: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val watchlist by viewModel.watchlist.collectAsState()
@@ -45,15 +42,23 @@ fun HomeScreen(
             BannerAndCardBuilder("Watchlist",
                 watchlist,
                 viewModel::onUpdateWatchStatus,
-                onHeaderClick = {
-                    navController.switchTab(Routes.watchlist)
-                }
+                onHeaderClick = onNavigateToWatchlist
             )
             Spacer(modifier = Modifier.height(48.dp))
-//            BannerAndCardBuilder("Trending Movies", trendingMovies, viewModel::onUpdateWatchStatus)
-//            Spacer(modifier = Modifier.height(48.dp))
-//            BannerAndCardBuilder("Trending TV Shows", trendingTvShows, viewModel::onUpdateWatchStatus)
-//            Spacer(modifier = Modifier.height(48.dp))
+            BannerAndCardBuilder(
+                "Trending Movies",
+                trendingMovies,
+                viewModel::onUpdateWatchStatus,
+                onHeaderClick = onNavigateToTrendingMovies
+            )
+            Spacer(modifier = Modifier.height(48.dp))
+            BannerAndCardBuilder(
+                "Trending TV Shows",
+                trendingTvShows,
+                viewModel::onUpdateWatchStatus,
+                onHeaderClick = onNavigateToTrendingTvShows
+            )
+            Spacer(modifier = Modifier.height(48.dp))
         }
     }
 }

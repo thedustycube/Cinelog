@@ -144,7 +144,7 @@ fun CardBuilder(
     } else {
         Card(
             modifier = Modifier
-                .height(200.dp)
+                .height(180.dp)
                 .width(120.dp)
         ) {
             CardPoster(item, onUpdateWatchStatus)
@@ -156,7 +156,7 @@ fun CardBuilder(
 @Composable
 fun BannerHeader(
     bannerName: String,
-    onHeaderClick: () -> Unit,
+    onHeaderClick: () -> Unit = { },
     hasIcon: Boolean
 ) {
     Row(
@@ -216,7 +216,7 @@ fun VerticalList(
     Column(modifier = Modifier.fillMaxSize()) {
         BannerHeader(bannerName, onHeaderClick, hasIcon)
         LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
+            columns = GridCells.Fixed(4),
             modifier = Modifier.padding(4.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -233,7 +233,7 @@ fun BannerAndCardBuilder(
     bannerName: String,
     watchItems: List<UserWatchItem>,
     onUpdateWatchStatus: (UserWatchItem, WatchStatus) -> Unit,
-    onHeaderClick: () -> Unit,
+    onHeaderClick: () -> Unit = { },
     isHorizontal: Boolean = true,
     hasIcon: Boolean = true
 ) {
