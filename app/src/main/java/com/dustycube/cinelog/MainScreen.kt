@@ -27,16 +27,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.dustycube.cinelog.screens.GenreScreen
-import com.dustycube.cinelog.screens.SearchScreen
-import com.dustycube.cinelog.screens.SettingsScreen
-import com.dustycube.cinelog.ui.home.HomeScreen
+import com.dustycube.cinelog.ui.features.genres.GenreScreen
+import com.dustycube.cinelog.ui.features.search.SearchScreen
+import com.dustycube.cinelog.ui.features.settings.SettingsScreen
+import com.dustycube.cinelog.ui.features.home.HomeScreen
+import com.dustycube.cinelog.ui.features.home.TrendingMoviesScreen
+import com.dustycube.cinelog.ui.features.home.TrendingTvShowsScreen
 import com.dustycube.cinelog.ui.navigation.Routes
-import com.dustycube.cinelog.ui.watchlist.WatchlistScreen
+import com.dustycube.cinelog.ui.features.watchlist.WatchlistScreen
+import okhttp3.Route
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,38 +50,55 @@ import com.dustycube.cinelog.ui.watchlist.WatchlistScreen
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
 
+
+
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+    val currentRoute = navBackStackEntry?.destination
+
+    fun navigateToTab(route: String) {
+        navController.navigate(route) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
 
     val navItems = listOf(
         NavItem(
             label = "Home",
-            route = Routes.home,
+            route = Routes.homeTab,
+            rootRoute = Routes.home,
             selectedIcon = Icons.Filled.Home,
             idleIcon = Icons.Outlined.Home
         ),
         NavItem(
             label = "Watchlist",
             route = Routes.watchlist,
+            rootRoute = "",
             selectedIcon = Icons.Filled.Bookmarks,
             idleIcon = Icons.Outlined.Bookmarks
         ),
         NavItem(
             label = "Search",
             route = Routes.search,
+            rootRoute = "",
             selectedIcon = Icons.Filled.Search,
             idleIcon = Icons.Outlined.Search
         ),
         NavItem(
             label = "Genres",
             route = Routes.genres,
+            rootRoute = "",
             selectedIcon = Icons.Filled.Category,
             idleIcon = Icons.Outlined.Category
         ),
         NavItem(
             label = "Settings",
             route = Routes.settings,
+            rootRoute = "",
             selectedIcon = Icons.Filled.Settings,
             idleIcon = Icons.Outlined.Settings
         )
@@ -99,17 +122,20 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 containerColor = Color.Gray
             ) {
                 navItems.forEach { item ->
-                    val isSelected = currentRoute == item.route
+                    val isSelected = currentRoute?.hierarchy?.any { it.route == item.route } == true
 
                     NavigationBarItem(
                         selected = isSelected,
                         onClick = {
-                            navController.navigate(item.route) {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
+                            if (isSelected) {
+                                navController.navigate(item.rootRoute) {
+                                    popUpTo(item.rootRoute) {
+                                        inclusive = true
+                                    }
+                                    launchSingleTop = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
+                            } else {
+                                navigateToTab(item.route)
                             }
                         },
                         label = { Text(text = item.label) },
@@ -131,13 +157,34 @@ fun MainScreen(modifier: Modifier = Modifier) {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Routes.home,
+            startDestination = Routes.homeTab,
             modifier = modifier.padding(innerPadding)
         ) {
-            composable(
-                Routes.home
+            navigation(
+                startDestination = Routes.home,
+                route = Routes.homeTab
             ) {
-                HomeScreen(navController = navController)
+                composable(
+                    Routes.home
+                ) {
+                    HomeScreen(
+                        onNavigateToWatchlist = {
+                            navigateToTab(Routes.watchlist)
+                        },
+                        onNavigateToTrendingMovies = { navController.navigate(Routes.trendingMovies) },
+                        onNavigateToTrendingTvShows = { navController.navigate(Routes.trendingTvShows) }
+                    )
+                }
+                composable(
+                    Routes.trendingMovies
+                ) {
+                    TrendingMoviesScreen()
+                }
+                composable(
+                    Routes.trendingTvShows
+                ) {
+                    TrendingTvShowsScreen()
+                }
             }
             composable(
                 Routes.watchlist
