@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -69,11 +70,13 @@ fun CardPoster(
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(
-                    if (item.poster_path != null) "https://image.tmdb.org/t/p/w500${item.poster_path}"
-                    else R.drawable.no_poster
+                    item.poster_path?.takeIf { it.isNotEmpty() }?.let { "https://image.tmdb.org/t/p/w500$it" }
                 )
                 .build(),
             contentDescription = isMovieOrTvShow(item),
+            placeholder = painterResource(R.drawable.no_poster),
+            error = painterResource(R.drawable.no_poster),
+            fallback = painterResource(R.drawable.no_poster),
             modifier = Modifier.fillMaxWidth(),
                 // .clip(RoundedCornerShape(8.dp))
             contentScale = ContentScale.FillBounds

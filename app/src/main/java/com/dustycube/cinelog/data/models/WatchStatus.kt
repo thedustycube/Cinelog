@@ -14,8 +14,8 @@ enum class WatchStatus(val order: Int, val icon: ImageVector) {
     NONE(6, Icons.Outlined.BookmarkBorder),
     WATCHING(5, Icons.Default.RemoveRedEye),
     REWATCHING(4, Icons.Default.FastRewind),
-    COMPLETED(3, Icons.Default.CheckCircle),
-    PLANNING(2, Icons.Default.BookmarkAdded),
+    PLANNING(3, Icons.Default.BookmarkAdded),
+    COMPLETED(2, Icons.Default.CheckCircle),
     PAUSED(1, Icons.Default.Pause),
     DROPPED(0, Icons.Outlined.ArrowDropDownCircle)
 }

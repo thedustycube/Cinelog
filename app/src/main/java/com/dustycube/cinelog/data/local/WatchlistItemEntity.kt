@@ -12,7 +12,7 @@ data class WatchlistItemEntity(
     override val adult: Boolean,
     override val overview: String,
     override val popularity: Double,
-    override val poster_path: String,
+    override val poster_path: String?,
     override val vote_average: Double?,
     override val vote_count: Int,
     override val media_type: String,

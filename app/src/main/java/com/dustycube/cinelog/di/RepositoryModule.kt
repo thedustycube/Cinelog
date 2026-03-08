@@ -30,20 +30,10 @@ class RepositoryModule(
         flow { emit(fetchTrendingMovies()) },
         getFullWatchlist()
     ) {
-        trendingMovies, watchlist ->
+            trendingMovies, watchlist ->
         trendingMovies.map { movie ->
             val savedItem = watchlist.find { it.id == movie.id }
             movie.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
-        }
-    }
-
-    fun getTrendingTvShowsWithStatus(): Flow<List<TvShow>> = combine(
-        flow { emit(fetchTrendingTvShows()) },
-        getFullWatchlist()
-    ) { trending, watchlist ->
-        trending.map { tvShow ->
-            val savedItem = watchlist.find { it.id == tvShow.id }
-            tvShow.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
         }
     }
 
@@ -72,6 +62,16 @@ class RepositoryModule(
         }
     }
 
+    fun getTrendingTvShowsWithStatus(): Flow<List<TvShow>> = combine(
+        flow { emit(fetchTrendingTvShows()) },
+        getFullWatchlist()
+    ) { trending, watchlist ->
+        trending.map { tvShow ->
+            val savedItem = watchlist.find { it.id == tvShow.id }
+            tvShow.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
+        }
+    }
+
     suspend fun fetchTrendingTvShows(): List<TvShow> {
         return try {
             val response = apiService.getTrendingTvShows(token = accessToken)
@@ -92,6 +92,16 @@ class RepositoryModule(
             }
         } catch (e: Exception) {
             emptyList()
+        }
+    }
+
+    fun getSearchResultsWithStatus(query: String): Flow<List<SearchItem>> = combine(
+        flow { emit(fetchSearchResults(query)) },
+        getFullWatchlist()
+    ) { searchResult, watchlist ->
+        searchResult.map { searchItem ->
+            val savedItem = watchlist.find { it.id == searchItem.id }
+            searchItem.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
         }
     }
 
@@ -126,6 +136,7 @@ class RepositoryModule(
         val entity = when(item) {
             is Movie -> item.toEntity(newStatus)
             is TvShow -> item.toEntity(newStatus)
+            is SearchItem -> item.toEntity(newStatus)
             is WatchlistItemEntity -> item.copy(
                 watchStatus = newStatus,
                 lastUpdatedTimeStamp = LocalDateTime.now()
