@@ -1,5 +1,6 @@
 package com.dustycube.cinelog.data.api
 
+import com.dustycube.cinelog.data.models.SearchResponse
 import com.dustycube.cinelog.data.models.TrendingMovieResponse
 import com.dustycube.cinelog.data.models.TrendingTvResponse
 import retrofit2.http.GET
@@ -21,4 +22,11 @@ interface TMDBApiService {
         @Query("language") lang: String = "en-US",
         @Header("Authorization") token: String
     ): TrendingTvResponse
+
+    // searching for movies and TV shows
+    @GET("search/multi")
+    suspend fun getSearchResults(
+        @Query("query") query: String,
+        @Header("Authorization") token: String
+    ): SearchResponse
 }

@@ -37,19 +37,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.dustycube.cinelog.R
 import com.dustycube.cinelog.data.models.Movie
+import com.dustycube.cinelog.data.models.SearchItem
 import com.dustycube.cinelog.data.models.TvShow
 import com.dustycube.cinelog.data.models.UserWatchItem
 import com.dustycube.cinelog.data.models.WatchStatus
 
-fun isMovieOrTvShow(item: UserWatchItem): String {
+fun isMovieOrTvShow(item: UserWatchItem): String? {
     return when (item) {
         is Movie -> item.title
         is TvShow -> item.name
-        else -> ""
+        is SearchItem -> if (item.media_type == "movie") item.title else item.name
+        else -> null
     }
 }
 
@@ -59,11 +64,15 @@ fun CardPoster(
     onUpdateWatchStatus: (UserWatchItem, WatchStatus) -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
-    val fullImageUrl = "https://image.tmdb.org/t/p/w500${item.poster_path}"
 
     Box {
         AsyncImage(
-            model = fullImageUrl,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(
+                    if (item.poster_path != null) "https://image.tmdb.org/t/p/w500${item.poster_path}"
+                    else R.drawable.no_poster
+                )
+                .build(),
             contentDescription = isMovieOrTvShow(item),
             modifier = Modifier.fillMaxWidth(),
                 // .clip(RoundedCornerShape(8.dp))
@@ -119,7 +128,7 @@ fun CardTitle(
     ) {
         Text(
             modifier = Modifier.padding(start = 4.dp, top = 4.dp),
-            text = isMovieOrTvShow(item),
+            text = isMovieOrTvShow(item) ?: "",
             fontWeight = FontWeight.SemiBold
         )
     }
@@ -144,7 +153,7 @@ fun CardBuilder(
     } else {
         Card(
             modifier = Modifier
-                .height(180.dp)
+                .height(200.dp)
                 .width(120.dp)
         ) {
             CardPoster(item, onUpdateWatchStatus)
@@ -216,7 +225,7 @@ fun VerticalList(
     Column(modifier = Modifier.fillMaxSize()) {
         BannerHeader(bannerName, onHeaderClick, hasIcon)
         LazyVerticalGrid(
-            columns = GridCells.Fixed(4),
+            columns = GridCells.Fixed(3),
             modifier = Modifier.padding(4.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
