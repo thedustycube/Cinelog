@@ -9,8 +9,10 @@ import com.dustycube.cinelog.data.models.WatchStatus
 import com.dustycube.cinelog.di.RepositoryModule
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,10 +24,12 @@ class SearchViewModel @Inject constructor(
     val searchResults: StateFlow<List<SearchItem>> = _searchResults.asStateFlow()
 
     fun search(query: String) {
-        viewModelScope.launch {
-            val results = remoteRepository.fetchSearchResults(query)
-            _searchResults.value = results
-        }
+         viewModelScope.launch {
+             remoteRepository.getSearchResultsWithStatus(query)
+                 .collect { results ->
+                     _searchResults.value = results
+                 }
+         }
     }
 
     fun onUpdateWatchStatus(item: UserWatchItem, newStatus: WatchStatus) {
