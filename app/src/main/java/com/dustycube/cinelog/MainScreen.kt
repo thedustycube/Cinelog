@@ -34,7 +34,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.dustycube.cinelog.ui.features.genres.GenreScreen
+import com.dustycube.cinelog.ui.features.genre.GenreScreen
 import com.dustycube.cinelog.ui.features.search.SearchScreen
 import com.dustycube.cinelog.ui.features.settings.SettingsScreen
 import com.dustycube.cinelog.ui.features.home.HomeScreen
@@ -42,7 +42,6 @@ import com.dustycube.cinelog.ui.features.home.TrendingMoviesScreen
 import com.dustycube.cinelog.ui.features.home.TrendingTvShowsScreen
 import com.dustycube.cinelog.ui.navigation.Routes
 import com.dustycube.cinelog.ui.features.watchlist.WatchlistScreen
-import okhttp3.Route
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -90,8 +89,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
         ),
         NavItem(
             label = "Genres",
-            route = Routes.genres,
-            rootRoute = "",
+            route = Routes.genreTab,
+            rootRoute = Routes.genre,
             selectedIcon = Icons.Filled.Category,
             idleIcon = Icons.Outlined.Category
         ),
@@ -196,10 +195,15 @@ fun MainScreen(modifier: Modifier = Modifier) {
             ) {
                 SearchScreen()
             }
-            composable(
-                Routes.genres
+            navigation(
+                startDestination = Routes.genre,
+                route = Routes.genreTab
             ) {
-                GenreScreen()
+                composable(
+                    Routes.genre
+                ) {
+                    GenreScreen()
+                }
             }
             composable(
                 Routes.settings
