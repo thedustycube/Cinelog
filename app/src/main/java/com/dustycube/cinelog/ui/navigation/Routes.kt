@@ -5,8 +5,10 @@ object Routes {
     const val home = "home"
     const val watchlist = "watchlist"
     const val search = "search"
-    const val genres = "genres"
+    const val genreTab = "genre_tab"
+    const val genre = "genres"
     const val settings = "settings"
     const val trendingMovies = "trending_movies"
     const val trendingTvShows = "trending_tv_shows"
+    const val genreDetails = "genre_details"
 }
