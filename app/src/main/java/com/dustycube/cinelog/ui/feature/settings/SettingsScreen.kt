@@ -1,4 +1,4 @@
-package com.dustycube.cinelog.ui.features.settings
+package com.dustycube.cinelog.ui.feature.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

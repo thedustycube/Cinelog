@@ -1,10 +1,10 @@
-package com.dustycube.cinelog.ui.features.watchlist
+package com.dustycube.cinelog.ui.feature.watchlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dustycube.cinelog.data.models.UserWatchItem
 import com.dustycube.cinelog.data.models.WatchStatus
-import com.dustycube.cinelog.di.RepositoryModule
+import com.dustycube.cinelog.data.repository.WatchlistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -13,14 +13,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WatchlistViewModel @Inject constructor(
-    private val remoteRepository: RepositoryModule
+    private val watchlistRepository: WatchlistRepository
 ) : ViewModel() {
-    val watchlist = remoteRepository.getFullWatchlist()
+    val watchlist = watchlistRepository.getFullWatchlist()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun onUpdateWatchStatus(item: UserWatchItem, newStatus: WatchStatus) {
         viewModelScope.launch {
-            remoteRepository.updateWatchStatus(item, newStatus)
+            watchlistRepository.updateWatchStatus(item, newStatus)
         }
     }
 }

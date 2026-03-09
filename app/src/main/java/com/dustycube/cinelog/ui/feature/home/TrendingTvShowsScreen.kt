@@ -1,4 +1,4 @@
-package com.dustycube.cinelog.ui.features.home
+package com.dustycube.cinelog.ui.feature.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -17,21 +17,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.dustycube.cinelog.ui.components.BannerAndCardBuilder
 
 @Composable
-fun TrendingMoviesScreen(
+fun TrendingTvShowsScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val trendingMovies by viewModel.trendingMovies.collectAsState()
+    val trendingTvShows by viewModel.trendingTvShows.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize()
             .background(Color(0xFFE8E2DB))
     ) {
-        if (trendingMovies.isEmpty()) {
+        if (trendingTvShows.isEmpty()) {
             Text(text = "Fetching the trending movies...")
             CircularProgressIndicator()
         } else {
             BannerAndCardBuilder("Watchlist",
-                trendingMovies,
+                trendingTvShows,
                 viewModel::onUpdateWatchStatus,
                 isHorizontal = false,
                 hasIcon = false
