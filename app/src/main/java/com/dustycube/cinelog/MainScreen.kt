@@ -34,14 +34,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.dustycube.cinelog.ui.features.genre.GenreScreen
-import com.dustycube.cinelog.ui.features.search.SearchScreen
-import com.dustycube.cinelog.ui.features.settings.SettingsScreen
-import com.dustycube.cinelog.ui.features.home.HomeScreen
-import com.dustycube.cinelog.ui.features.home.TrendingMoviesScreen
-import com.dustycube.cinelog.ui.features.home.TrendingTvShowsScreen
+import com.dustycube.cinelog.ui.feature.genre.GenreScreen
+import com.dustycube.cinelog.ui.feature.home.HomeScreen
+import com.dustycube.cinelog.ui.feature.home.TrendingMoviesScreen
+import com.dustycube.cinelog.ui.feature.home.TrendingTvShowsScreen
+import com.dustycube.cinelog.ui.feature.search.SearchScreen
+import com.dustycube.cinelog.ui.feature.settings.SettingsScreen
+import com.dustycube.cinelog.ui.feature.watchlist.WatchlistScreen
 import com.dustycube.cinelog.ui.navigation.Routes
-import com.dustycube.cinelog.ui.features.watchlist.WatchlistScreen
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -89,8 +89,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
         ),
         NavItem(
             label = "Genres",
-            route = Routes.genreTab,
-            rootRoute = Routes.genre,
+            route = Routes.genre,
+            rootRoute = "",
             selectedIcon = Icons.Filled.Category,
             idleIcon = Icons.Outlined.Category
         ),
@@ -195,15 +195,10 @@ fun MainScreen(modifier: Modifier = Modifier) {
             ) {
                 SearchScreen()
             }
-            navigation(
-                startDestination = Routes.genre,
-                route = Routes.genreTab
+            composable(
+                Routes.genre
             ) {
-                composable(
-                    Routes.genre
-                ) {
-                    GenreScreen()
-                }
+                GenreScreen()
             }
             composable(
                 Routes.settings

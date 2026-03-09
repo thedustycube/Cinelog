@@ -15,9 +15,9 @@ import androidx.compose.ui.unit.dp
 import com.dustycube.cinelog.data.models.Genre
 
 @Composable
-fun GenreCard(
+fun GenreCardBuilder(
     genre: Genre,
-    onCardClick: () -> Unit
+    onCardClick: () -> Unit = { }
 ) {
     Card(
         modifier = Modifier

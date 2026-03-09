@@ -1,4 +1,4 @@
-package com.dustycube.cinelog.ui.features.watchlist
+package com.dustycube.cinelog.ui.feature.watchlist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
