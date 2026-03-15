@@ -1,24 +1,33 @@
 package com.dustycube.cinelog.ui.feature.genre
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
 import com.dustycube.cinelog.data.models.Genre
 import com.dustycube.cinelog.data.models.Movie
 import com.dustycube.cinelog.data.models.TvShow
 import com.dustycube.cinelog.data.models.UserWatchItem
 import com.dustycube.cinelog.data.models.WatchStatus
+import com.dustycube.cinelog.data.repository.CommonRepository
 import com.dustycube.cinelog.data.repository.GenreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class GenreViewModel @Inject constructor(
-    private val genreRepository: GenreRepository
+    private val genreRepository: GenreRepository,
+    commonRepository: CommonRepository
 ) : ViewModel() {
 
     private val _selectedTabIndex = MutableStateFlow(0)
@@ -36,11 +45,41 @@ class GenreViewModel @Inject constructor(
     private val _tvShowGenres = MutableStateFlow<List<Genre>>(emptyList())
     val tvShowGenres: StateFlow<List<Genre>> = _tvShowGenres.asStateFlow()
 
-    private val _moviesByGenre = MutableStateFlow<List<Movie>>(emptyList())
-    val moviesByGenre: StateFlow<List<Movie>> = _moviesByGenre.asStateFlow()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val pagedMovies = _selectedMovieGenre
+        .filterNotNull()
+        .flatMapLatest { genre ->
+            genreRepository.getMoviesByGenrePagingFlow(genre.id)
+        }
+        .cachedIn(viewModelScope)
 
-    private val _tvShowsByGenre = MutableStateFlow<List<TvShow>>(emptyList())
-    val tvShowsByGenre: StateFlow<List<TvShow>> = _tvShowsByGenre.asStateFlow()
+    val moviesByGenre: Flow<PagingData<Movie>> = combine(
+        pagedMovies,
+        commonRepository.getFullWatchlist()
+    ) { pagingData, watchlistItems ->
+        pagingData.map { pagedMovie ->
+            val savedItem = watchlistItems.find { it.id == pagedMovie.id }
+            pagedMovie.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val pagedTvShows = _selectedTvShowGenre
+        .filterNotNull()
+        .flatMapLatest { genre ->
+            genreRepository.getTvShowsByGenrePagingFlow(genre.id)
+        }
+        .cachedIn(viewModelScope)
+
+    val tvShowsByGenre: Flow<PagingData<TvShow>> = combine(
+        pagedTvShows,
+        commonRepository.getFullWatchlist()
+    ) { pagingData, watchlistItems ->
+        pagingData.map { pagedTvShow ->
+            val savedItem = watchlistItems.find { it.id == pagedTvShow.id }
+            pagedTvShow.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
+        }
+    }
 
     init {
         loadGenres()
@@ -49,25 +88,6 @@ class GenreViewModel @Inject constructor(
     fun updateTabIndex(index: Int) { _selectedTabIndex.value = index }
     fun updateMovieGenre(genre: Genre?) { _selectedMovieGenre.value = genre }
     fun updateTvShowGenre(genre: Genre?) { _selectedTvShowGenre.value = genre }
-
-    fun getMoviesByGenre(genreId: Int) {
-        viewModelScope.launch {
-            genreRepository.getMoviesByGenreWithStatus(genreId)
-                .collect { results ->
-                    _moviesByGenre.value = results
-                    Log.d("GenreViewModel", "${results.size}")
-                }
-        }
-    }
-
-    fun getTvShowsByGenre(genreId: Int) {
-        viewModelScope.launch {
-            genreRepository.getTvShowsByGenreWithStatus(genreId)
-                .collect { results ->
-                    _tvShowsByGenre.value = results
-                }
-        }
-    }
 
     fun loadGenres() {
         viewModelScope.launch {

@@ -52,6 +52,7 @@ interface TMDBApiService {
     suspend fun getMoviesByGenre(
         @Query("language") lang: String = "en-US",
         @Query("with_genres") genreId: Int,
+        @Query("page") page: Int = 1,
         @Header("Authorization") token: String
     ): MovieByGenreResponse
 
@@ -60,6 +61,7 @@ interface TMDBApiService {
     suspend fun getTvShowsByGenre(
         @Query("language") lang: String = "en-US",
         @Query("with_genres") genreId: Int,
+        @Query("page") page: Int = 1,
         @Header("Authorization") token: String
     ): TvShowsByGenreResponse
 }
