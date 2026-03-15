@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.dustycube.cinelog.ui.components.BannerHeader
 import com.dustycube.cinelog.ui.components.CardBuilder
 
@@ -39,7 +40,7 @@ fun SearchScreen(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     var text by remember { mutableStateOf("") }
-    val searchResults by viewModel.searchResults.collectAsState()
+    val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -71,8 +72,11 @@ fun SearchScreen(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(searchResults) { searchItem ->
-                CardBuilder(searchItem, viewModel::onUpdateWatchStatus, false)
+            items(searchResults.itemCount) { index ->
+                val searchItem = searchResults[index]
+                if (searchItem != null) {
+                    CardBuilder(searchItem, viewModel::onUpdateWatchStatus, false)
+                }
             }
         }
     }
