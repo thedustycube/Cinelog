@@ -1,16 +1,16 @@
 package com.dustycube.cinelog.data.repository
 
-import android.util.Log
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.dustycube.cinelog.data.api.TMDBApiService
-import com.dustycube.cinelog.data.local.WatchlistItemEntity
 import com.dustycube.cinelog.data.models.Genre
 import com.dustycube.cinelog.data.models.Movie
 import com.dustycube.cinelog.data.models.TvShow
 import com.dustycube.cinelog.data.models.UserWatchItem
 import com.dustycube.cinelog.data.models.WatchStatus
+import com.dustycube.cinelog.data.paging.UniversalPagingSource
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import java.time.LocalDateTime
 
 class GenreRepository(
@@ -18,8 +18,6 @@ class GenreRepository(
     private val commonRepository: CommonRepository
 ) {
     val accessToken = commonRepository.fetchAccessToken()
-
-    fun getFullWatchlist(): Flow<List<WatchlistItemEntity>> = commonRepository.getFullWatchlist()
 
     suspend fun fetchMovieGenres(): List<Genre> {
         return try {
@@ -49,73 +47,38 @@ class GenreRepository(
         }
     }
 
-    fun getMoviesByGenreWithStatus(genreId: Int): Flow<List<Movie>> = combine(
-        flow { emit(fetchMoviesByGenre(genreId)) },
-        getFullWatchlist()
-    ) { movies, watchlist ->
-        movies.map { movie ->
-            val savedItem = watchlist.find { it.id == movie.id }
-            movie.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
-        }
-    }
-
-    suspend fun fetchMoviesByGenre(genreId: Int): List<Movie> {
-        return try {
-            val response = api.getMoviesByGenre(genreId = genreId, token = accessToken)
-            response.results.map { movie ->
-                Movie(
-                    id = movie.id,
-                    title = movie.title,
-                    adult = movie.adult,
-                    overview = movie.overview,
-                    popularity = movie.popularity,
-                    poster_path = movie.poster_path,
-                    director = "",
-                    release_date = movie.release_date,
-                    vote_average = movie.vote_average,
-                    vote_count = movie.vote_count,
-                    media_type = movie.media_type,
-                    watchStatus = WatchStatus.NONE,
-                    lastUpdatedTimeStamp = LocalDateTime.now()
-                )
+    fun getMoviesByGenrePagingFlow(genreId: Int): Flow<PagingData<Movie>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20),
+            pagingSourceFactory = {
+                UniversalPagingSource { page ->
+                    val response = api.getMoviesByGenre(genreId = genreId, page = page, token = accessToken)
+                    response.results.map { movieByGenre ->
+                        movieByGenre.copy(
+                            watchStatus = WatchStatus.NONE,
+                            lastUpdatedTimeStamp = LocalDateTime.now()
+                        )
+                    }
+                }
             }
-        } catch (e: Exception) {
-            Log.e("RepositoryModule", "Error fetching movies by genre: ${e.message}")
-            emptyList()
-        }
+        ).flow
     }
 
-    fun getTvShowsByGenreWithStatus(genreId: Int): Flow<List<TvShow>> = combine(
-        flow { emit(fetchTvShowsByGenre(genreId)) },
-        getFullWatchlist()
-    ) { tvShows, watchlist ->
-        tvShows.map { tvShow ->
-            val savedItem = watchlist.find { it.id == tvShow.id }
-            tvShow.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
-        }
-    }
-
-    suspend fun fetchTvShowsByGenre(genreId: Int): List<TvShow> {
-        return try {
-            val response = api.getTvShowsByGenre(genreId = genreId, token = accessToken)
-            response.results.map { tvShow ->
-                TvShow(
-                    id = tvShow.id,
-                    name = tvShow.name,
-                    adult = tvShow.adult,
-                    overview = tvShow.overview,
-                    popularity = tvShow.popularity,
-                    poster_path = tvShow.poster_path,
-                    vote_average = tvShow.vote_average,
-                    vote_count = tvShow.vote_count,
-                    media_type = tvShow.media_type,
-                    watchStatus = WatchStatus.NONE,
-                    lastUpdatedTimeStamp = LocalDateTime.now()
-                )
+    fun getTvShowsByGenrePagingFlow(genreId: Int): Flow<PagingData<TvShow>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20),
+            pagingSourceFactory = {
+                UniversalPagingSource { page ->
+                    val response = api.getTvShowsByGenre(genreId = genreId, page = page, token = accessToken)
+                    response.results.map { movieByGenre ->
+                        movieByGenre.copy(
+                            watchStatus = WatchStatus.NONE,
+                            lastUpdatedTimeStamp = LocalDateTime.now()
+                        )
+                    }
+                }
             }
-        } catch (e: Exception) {
-            emptyList()
-        }
+        ).flow
     }
 
     suspend fun updateWatchStatus(

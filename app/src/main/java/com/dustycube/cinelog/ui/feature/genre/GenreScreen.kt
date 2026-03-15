@@ -13,7 +13,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -21,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.dustycube.cinelog.ui.components.BannerHeader
 import com.dustycube.cinelog.ui.components.CardBuilder
 import com.dustycube.cinelog.ui.components.GenreCardBuilder
@@ -37,8 +37,8 @@ fun GenreScreen(
     val selectedMovieGenre by viewModel.selectedMovieGenre.collectAsState()
     val selectedTvShowGenre by viewModel.selectedTvShowGenre.collectAsState()
 
-    val moviesByGenre by viewModel.moviesByGenre.collectAsState()
-    val tvShowsByGenre by viewModel.tvShowsByGenre.collectAsState()
+    val moviesByGenre = viewModel.moviesByGenre.collectAsLazyPagingItems()
+    val tvShowsByGenre = viewModel.tvShowsByGenre.collectAsLazyPagingItems()
 
     BackHandler(
         enabled = selectedMovieGenre != null || selectedTvShowGenre != null
@@ -70,9 +70,6 @@ fun GenreScreen(
         when (selectedTabIndex) {
             0 -> {
                 if (selectedMovieGenre != null) {
-                    LaunchedEffect(selectedMovieGenre) {
-                        viewModel.getMoviesByGenre(selectedMovieGenre!!.id)
-                    }
                     BannerHeader(
                         selectedMovieGenre!!.name,
                         hasIcon = false
@@ -83,12 +80,15 @@ fun GenreScreen(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        items(moviesByGenre) { movieByGenre ->
-                            CardBuilder(
-                                movieByGenre,
-                                viewModel::onUpdateWatchStatus,
-                                false
-                            )
+                        items(moviesByGenre.itemCount) { index ->
+                            val movie = moviesByGenre[index]
+                            if (movie != null) {
+                                CardBuilder(
+                                    movie,
+                                    viewModel::onUpdateWatchStatus,
+                                    false
+                                )
+                            }
                         }
                     }
                 } else {
@@ -105,9 +105,6 @@ fun GenreScreen(
             }
             1 -> {
                 if (selectedTvShowGenre != null) {
-                    LaunchedEffect(selectedTvShowGenre) {
-                        viewModel.getTvShowsByGenre(selectedTvShowGenre!!.id)
-                    }
                     BannerHeader(
                         selectedTvShowGenre!!.name,
                         hasIcon = false
@@ -118,12 +115,15 @@ fun GenreScreen(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        items(tvShowsByGenre) { tvShowByGenre ->
-                            CardBuilder(
-                                tvShowByGenre,
-                                viewModel::onUpdateWatchStatus,
-                                false
-                            )
+                        items(tvShowsByGenre.itemCount) { index ->
+                            val tvShow = tvShowsByGenre[index]
+                            if (tvShow != null) {
+                                CardBuilder(
+                                    tvShow,
+                                    viewModel::onUpdateWatchStatus,
+                                    false
+                                )
+                            }
                         }
                     }
                 } else {
