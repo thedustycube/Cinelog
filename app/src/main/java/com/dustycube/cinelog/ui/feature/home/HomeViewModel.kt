@@ -2,30 +2,58 @@ package com.dustycube.cinelog.ui.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
 import com.dustycube.cinelog.data.models.Movie
 import com.dustycube.cinelog.data.models.TvShow
 import com.dustycube.cinelog.data.models.UserWatchItem
 import com.dustycube.cinelog.data.models.WatchStatus
+import com.dustycube.cinelog.data.repository.CommonRepository
 import com.dustycube.cinelog.data.repository.HomeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val homeRepository: HomeRepository
+    private val homeRepository: HomeRepository,
+    commonRepository: CommonRepository
 ) : ViewModel() {
     val watchlist = homeRepository.getHomeWatchlist()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val trendingMovies: StateFlow<List<Movie>> = homeRepository.getTrendingMoviesWithStatus()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val pagedMovies = homeRepository.getTrendingMoviesPagingFlow()
+        .cachedIn(viewModelScope)
 
-    val trendingTvShows: StateFlow<List<TvShow>> = homeRepository.getTrendingTvShowsWithStatus()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val trendingMovies: Flow<PagingData<Movie>> = combine(
+        pagedMovies,
+        commonRepository.getFullWatchlist()
+    ) { pagingData, watchlistItems ->
+        pagingData.map { pagedMovie ->
+            val savedItem = watchlistItems.find { it.id == pagedMovie.id }
+            pagedMovie.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
+        }
+    }
+
+    val pagedTvShows = homeRepository.getTrendingTvShowsPagingFlow()
+        .cachedIn(viewModelScope)
+
+    val trendingTvShows: Flow<PagingData<TvShow>> = combine(
+        pagedTvShows,
+        commonRepository.getFullWatchlist()
+    ) { pagingData, watchlistItems ->
+        pagingData.map { pagedTvShow ->
+            val savedItem = watchlistItems.find { it.id == pagedTvShow.id }
+            pagedTvShow.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
+        }
+    }
 
     fun onUpdateWatchStatus(item: UserWatchItem, newStatus: WatchStatus) {
         viewModelScope.launch {

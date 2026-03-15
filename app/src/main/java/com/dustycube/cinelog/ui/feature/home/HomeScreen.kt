@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.dustycube.cinelog.ui.components.BannerAndCardBuilder
 
 
@@ -27,15 +28,15 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val watchlist by viewModel.watchlist.collectAsState()
-    val trendingMovies by viewModel.trendingMovies.collectAsState()
-    val trendingTvShows by viewModel.trendingTvShows.collectAsState()
+    val trendingMovies = viewModel.trendingMovies.collectAsLazyPagingItems()
+    val trendingTvShows = viewModel.trendingTvShows.collectAsLazyPagingItems()
 
     Column(
         modifier = Modifier.fillMaxSize()
             .background(Color(0xFFE8E2DB))
             .verticalScroll(rememberScrollState())
     ) {
-        if(trendingMovies.isEmpty() && trendingTvShows.isEmpty()) {
+        if(trendingMovies.itemCount == 0 && trendingTvShows.itemCount == 0) {
             Text(text = "Fetching trending movies and shows...")
             CircularProgressIndicator()
         } else {
@@ -47,14 +48,14 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(48.dp))
             BannerAndCardBuilder(
                 "Trending Movies",
-                trendingMovies,
+                trendingMovies.itemSnapshotList.items,
                 viewModel::onUpdateWatchStatus,
                 onHeaderClick = onNavigateToTrendingMovies
             )
             Spacer(modifier = Modifier.height(48.dp))
             BannerAndCardBuilder(
                 "Trending TV Shows",
-                trendingTvShows,
+                trendingTvShows.itemSnapshotList.items,
                 viewModel::onUpdateWatchStatus,
                 onHeaderClick = onNavigateToTrendingTvShows
             )
