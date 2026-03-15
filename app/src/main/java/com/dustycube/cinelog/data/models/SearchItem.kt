@@ -18,5 +18,7 @@ data class SearchItem(
 ): UserWatchItem
 
 data class SearchResponse(
-    val results: List<SearchItem>
+    val results: List<SearchItem>,
+    val total_pages: Int,
+    val total_results: Int
 )

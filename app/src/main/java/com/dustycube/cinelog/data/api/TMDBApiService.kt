@@ -30,6 +30,7 @@ interface TMDBApiService {
     @GET("search/multi")
     suspend fun getSearchResults(
         @Query("query") query: String,
+        @Query("page") page: Int = 1,
         @Header("Authorization") token: String
     ): SearchResponse
 
