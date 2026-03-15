@@ -16,6 +16,7 @@ interface TMDBApiService {
     @GET("trending/movie/week")
     suspend fun getTrendingMovies(
         @Query("language") lang: String = "en-US",
+        @Query("page") page: Int = 1,
         @Header("Authorization") token: String
     ): TrendingMovieResponse
 
@@ -23,6 +24,7 @@ interface TMDBApiService {
     @GET("trending/tv/week")
     suspend fun getTrendingTvShows(
         @Query("language") lang: String = "en-US",
+        @Query("page") page: Int = 1,
         @Header("Authorization") token: String
     ): TrendingTvResponse
 
