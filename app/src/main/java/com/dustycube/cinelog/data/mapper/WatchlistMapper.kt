@@ -1,10 +1,10 @@
 package com.dustycube.cinelog.data.mapper
 
 import com.dustycube.cinelog.data.local.WatchlistItemEntity
-import com.dustycube.cinelog.data.models.Movie
-import com.dustycube.cinelog.data.models.SearchItem
-import com.dustycube.cinelog.data.models.TvShow
-import com.dustycube.cinelog.data.models.WatchStatus
+import com.dustycube.cinelog.data.model.Movie
+import com.dustycube.cinelog.data.model.SearchItem
+import com.dustycube.cinelog.data.model.TvShow
+import com.dustycube.cinelog.data.model.WatchStatus
 import java.time.LocalDateTime
 
 fun Movie.toEntity(newStatus: WatchStatus): WatchlistItemEntity {

@@ -1,30 +1,24 @@
-package com.dustycube.cinelog.data.models
+package com.dustycube.cinelog.data.model
 
 import java.time.LocalDateTime
 
-data class Movie(
+data class SearchItem(
     override val id: Int,
     val title: String?,
+    val name: String?,
     override val adult: Boolean?,
     override val overview: String?,
     override val popularity: Double?,
     override val poster_path: String?,
-    val director: String?,
-    val release_date: String?,
+    override val media_type: String?,
     override val vote_average: Double?,
     override val vote_count: Int?,
-    override val media_type: String?,
     override val watchStatus: WatchStatus,
     override val lastUpdatedTimeStamp: LocalDateTime
-) : UserWatchItem
+): UserWatchItem
 
-// backdrop_path: String
-// genre_ids: List<Int>
-// original_language: String
-// original_title: String
-// video: Boolean
-
-data class TrendingMovieResponse(
-    val results: List<Movie>
+data class SearchResponse(
+    val results: List<SearchItem>,
+    val total_pages: Int,
+    val total_results: Int
 )
-

@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import com.dustycube.cinelog.data.models.Genre
-import com.dustycube.cinelog.data.models.Movie
-import com.dustycube.cinelog.data.models.TvShow
-import com.dustycube.cinelog.data.models.UserWatchItem
-import com.dustycube.cinelog.data.models.WatchStatus
+import com.dustycube.cinelog.data.model.Genre
+import com.dustycube.cinelog.data.model.Movie
+import com.dustycube.cinelog.data.model.TvShow
+import com.dustycube.cinelog.data.model.UserWatchItem
+import com.dustycube.cinelog.data.model.WatchStatus
 import com.dustycube.cinelog.data.repository.CommonRepository
 import com.dustycube.cinelog.data.repository.GenreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

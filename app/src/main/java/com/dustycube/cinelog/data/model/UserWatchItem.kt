@@ -1,4 +1,4 @@
-package com.dustycube.cinelog.data.models
+package com.dustycube.cinelog.data.model
 
 import java.time.LocalDateTime
 

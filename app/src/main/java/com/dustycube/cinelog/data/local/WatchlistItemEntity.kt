@@ -2,8 +2,8 @@ package com.dustycube.cinelog.data.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.dustycube.cinelog.data.models.UserWatchItem
-import com.dustycube.cinelog.data.models.WatchStatus
+import com.dustycube.cinelog.data.model.UserWatchItem
+import com.dustycube.cinelog.data.model.WatchStatus
 import java.time.LocalDateTime
 
 @Entity(tableName = "watchlist")
