@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.dustycube.cinelog.ui.components.BannerAndCardBuilder
+import com.dustycube.cinelog.ui.component.BannerAndCardBuilder
 
 
 @Composable

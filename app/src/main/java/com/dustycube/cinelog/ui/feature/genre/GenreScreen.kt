@@ -21,9 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.dustycube.cinelog.ui.components.BannerHeader
-import com.dustycube.cinelog.ui.components.CardBuilder
-import com.dustycube.cinelog.ui.components.GenreCardBuilder
+import com.dustycube.cinelog.ui.component.BannerHeader
+import com.dustycube.cinelog.ui.component.CardBuilder
+import com.dustycube.cinelog.ui.component.GenreCardBuilder
 
 @Composable
 fun GenreScreen(

@@ -1,6 +1,4 @@
-package com.dustycube.cinelog.data.models
-
-import com.google.gson.annotations.SerializedName
+package com.dustycube.cinelog.data.model
 
 data class Genre(
     val id: Int,

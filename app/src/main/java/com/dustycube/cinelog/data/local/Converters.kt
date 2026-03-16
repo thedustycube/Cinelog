@@ -1,7 +1,7 @@
 package com.dustycube.cinelog.data.local
 
 import androidx.room.TypeConverter
-import com.dustycube.cinelog.data.models.WatchStatus
+import com.dustycube.cinelog.data.model.WatchStatus
 import java.time.LocalDateTime
 
 class Converters {

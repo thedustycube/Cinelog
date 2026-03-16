@@ -1,4 +1,4 @@
-package com.dustycube.cinelog.ui.components
+package com.dustycube.cinelog.ui.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.dustycube.cinelog.data.models.Genre
+import com.dustycube.cinelog.data.model.Genre
 
 @Composable
 fun GenreCardBuilder(

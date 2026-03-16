@@ -1,4 +1,4 @@
-package com.dustycube.cinelog.ui.components
+package com.dustycube.cinelog.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,11 +43,11 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.dustycube.cinelog.R
-import com.dustycube.cinelog.data.models.Movie
-import com.dustycube.cinelog.data.models.SearchItem
-import com.dustycube.cinelog.data.models.TvShow
-import com.dustycube.cinelog.data.models.UserWatchItem
-import com.dustycube.cinelog.data.models.WatchStatus
+import com.dustycube.cinelog.data.model.Movie
+import com.dustycube.cinelog.data.model.SearchItem
+import com.dustycube.cinelog.data.model.TvShow
+import com.dustycube.cinelog.data.model.UserWatchItem
+import com.dustycube.cinelog.data.model.WatchStatus
 
 fun isMovieOrTvShow(item: UserWatchItem): String? {
     return when (item) {

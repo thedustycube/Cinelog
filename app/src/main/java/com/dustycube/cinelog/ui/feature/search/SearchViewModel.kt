@@ -1,15 +1,13 @@
 package com.dustycube.cinelog.ui.feature.search
 
-import androidx.compose.animation.core.withInfiniteAnimationFrameNanos
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import androidx.room.util.query
-import com.dustycube.cinelog.data.models.SearchItem
-import com.dustycube.cinelog.data.models.UserWatchItem
-import com.dustycube.cinelog.data.models.WatchStatus
+import com.dustycube.cinelog.data.model.SearchItem
+import com.dustycube.cinelog.data.model.UserWatchItem
+import com.dustycube.cinelog.data.model.WatchStatus
 import com.dustycube.cinelog.data.repository.CommonRepository
 import com.dustycube.cinelog.data.repository.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,8 +15,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest

@@ -4,11 +4,11 @@ import com.dustycube.cinelog.BuildConfig
 import com.dustycube.cinelog.data.local.WatchlistDao
 import com.dustycube.cinelog.data.local.WatchlistItemEntity
 import com.dustycube.cinelog.data.mapper.toEntity
-import com.dustycube.cinelog.data.models.Movie
-import com.dustycube.cinelog.data.models.SearchItem
-import com.dustycube.cinelog.data.models.TvShow
-import com.dustycube.cinelog.data.models.UserWatchItem
-import com.dustycube.cinelog.data.models.WatchStatus
+import com.dustycube.cinelog.data.model.Movie
+import com.dustycube.cinelog.data.model.SearchItem
+import com.dustycube.cinelog.data.model.TvShow
+import com.dustycube.cinelog.data.model.UserWatchItem
+import com.dustycube.cinelog.data.model.WatchStatus
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDateTime
 

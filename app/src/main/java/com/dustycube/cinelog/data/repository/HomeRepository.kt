@@ -3,18 +3,15 @@ package com.dustycube.cinelog.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.dustycube.cinelog.BuildConfig
 import com.dustycube.cinelog.data.api.TMDBApiService
 import com.dustycube.cinelog.data.local.WatchlistDao
 import com.dustycube.cinelog.data.local.WatchlistItemEntity
-import com.dustycube.cinelog.data.models.Movie
-import com.dustycube.cinelog.data.models.TvShow
-import com.dustycube.cinelog.data.models.UserWatchItem
-import com.dustycube.cinelog.data.models.WatchStatus
+import com.dustycube.cinelog.data.model.Movie
+import com.dustycube.cinelog.data.model.TvShow
+import com.dustycube.cinelog.data.model.UserWatchItem
+import com.dustycube.cinelog.data.model.WatchStatus
 import com.dustycube.cinelog.data.paging.UniversalPagingSource
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import java.time.LocalDateTime
 
 class HomeRepository(

@@ -14,18 +14,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.dustycube.cinelog.ui.components.BannerAndCardBuilder
+import com.dustycube.cinelog.ui.component.BannerAndCardBuilder
+import com.dustycube.cinelog.ui.component.MultiFilterHeader
 
 @Composable
 fun WatchlistScreen(
     viewModel: WatchlistViewModel = hiltViewModel()
 ) {
     val watchlist by viewModel.watchlist.collectAsState()
+    val selectedStatuses by viewModel.selectedStatuses.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize()
             .background(Color(0xFFE8E2DB))
     ) {
+        MultiFilterHeader(
+            selectedStatuses = selectedStatuses,
+            onToggleStatus = viewModel::toggleFilter
+        )
         if (watchlist.isEmpty()) {
             Text(text = "Fetching user watchlist...")
             CircularProgressIndicator()

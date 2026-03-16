@@ -1,9 +1,8 @@
 package com.dustycube.cinelog.data.repository
 
-import com.dustycube.cinelog.data.local.WatchlistDao
 import com.dustycube.cinelog.data.local.WatchlistItemEntity
-import com.dustycube.cinelog.data.models.UserWatchItem
-import com.dustycube.cinelog.data.models.WatchStatus
+import com.dustycube.cinelog.data.model.UserWatchItem
+import com.dustycube.cinelog.data.model.WatchStatus
 import kotlinx.coroutines.flow.Flow
 
 class WatchlistRepository(

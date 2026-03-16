@@ -4,11 +4,11 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.dustycube.cinelog.data.api.TMDBApiService
-import com.dustycube.cinelog.data.models.Genre
-import com.dustycube.cinelog.data.models.Movie
-import com.dustycube.cinelog.data.models.TvShow
-import com.dustycube.cinelog.data.models.UserWatchItem
-import com.dustycube.cinelog.data.models.WatchStatus
+import com.dustycube.cinelog.data.model.Genre
+import com.dustycube.cinelog.data.model.Movie
+import com.dustycube.cinelog.data.model.TvShow
+import com.dustycube.cinelog.data.model.UserWatchItem
+import com.dustycube.cinelog.data.model.WatchStatus
 import com.dustycube.cinelog.data.paging.UniversalPagingSource
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDateTime

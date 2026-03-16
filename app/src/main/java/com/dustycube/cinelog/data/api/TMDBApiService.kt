@@ -1,11 +1,11 @@
 package com.dustycube.cinelog.data.api
 
-import com.dustycube.cinelog.data.models.GenreResponse
-import com.dustycube.cinelog.data.models.MovieByGenreResponse
-import com.dustycube.cinelog.data.models.SearchResponse
-import com.dustycube.cinelog.data.models.TrendingMovieResponse
-import com.dustycube.cinelog.data.models.TrendingTvResponse
-import com.dustycube.cinelog.data.models.TvShowsByGenreResponse
+import com.dustycube.cinelog.data.model.GenreResponse
+import com.dustycube.cinelog.data.model.MovieByGenreResponse
+import com.dustycube.cinelog.data.model.SearchResponse
+import com.dustycube.cinelog.data.model.TrendingMovieResponse
+import com.dustycube.cinelog.data.model.TrendingTvResponse
+import com.dustycube.cinelog.data.model.TvShowsByGenreResponse
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Query

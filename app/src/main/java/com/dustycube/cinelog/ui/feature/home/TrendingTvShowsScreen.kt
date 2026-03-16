@@ -12,15 +12,12 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.dustycube.cinelog.ui.components.BannerAndCardBuilder
-import com.dustycube.cinelog.ui.components.CardBuilder
+import com.dustycube.cinelog.ui.component.CardBuilder
 
 @Composable
 fun TrendingTvShowsScreen(
