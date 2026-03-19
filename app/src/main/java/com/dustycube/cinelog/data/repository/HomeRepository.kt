@@ -8,7 +8,7 @@ import com.dustycube.cinelog.data.local.WatchlistDao
 import com.dustycube.cinelog.data.local.WatchlistItemEntity
 import com.dustycube.cinelog.data.model.Movie
 import com.dustycube.cinelog.data.model.TvShow
-import com.dustycube.cinelog.data.model.UserWatchItem
+import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.data.model.WatchStatus
 import com.dustycube.cinelog.data.paging.UniversalPagingSource
 import kotlinx.coroutines.flow.Flow
@@ -58,7 +58,7 @@ class HomeRepository(
     }
 
     suspend fun updateWatchStatus(
-        item: UserWatchItem,
+        item: WatchItem,
         newStatus: WatchStatus
     ) {
         commonRepository.updateWatchStatus(item, newStatus)

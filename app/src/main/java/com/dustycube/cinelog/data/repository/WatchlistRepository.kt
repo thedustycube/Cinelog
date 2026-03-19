@@ -1,7 +1,7 @@
 package com.dustycube.cinelog.data.repository
 
 import com.dustycube.cinelog.data.local.WatchlistItemEntity
-import com.dustycube.cinelog.data.model.UserWatchItem
+import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.data.model.WatchStatus
 import kotlinx.coroutines.flow.Flow
 
@@ -11,7 +11,7 @@ class WatchlistRepository(
     fun getFullWatchlist(): Flow<List<WatchlistItemEntity>> = commonRepository.getFullWatchlist()
 
     suspend fun updateWatchStatus(
-        item: UserWatchItem,
+        item: WatchItem,
         newStatus: WatchStatus
     ) {
         commonRepository.updateWatchStatus(item, newStatus)

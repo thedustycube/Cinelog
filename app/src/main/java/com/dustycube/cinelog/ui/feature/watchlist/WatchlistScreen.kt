@@ -14,11 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.ui.component.BannerAndCardBuilder
 import com.dustycube.cinelog.ui.component.MultiFilterHeader
 
 @Composable
 fun WatchlistScreen(
+    onCardClick: (WatchItem) -> Unit,
     viewModel: WatchlistViewModel = hiltViewModel()
 ) {
     val watchlist by viewModel.watchlist.collectAsState()
@@ -37,10 +39,11 @@ fun WatchlistScreen(
             CircularProgressIndicator()
         } else {
             BannerAndCardBuilder("Watchlist",
-                watchlist,
-                viewModel::onUpdateWatchStatus,
+                watchItems = watchlist,
+                onUpdateWatchStatus = viewModel::onUpdateWatchStatus,
                 isHorizontal = false,
-                hasIcon = false
+                hasIcon = false,
+                onCardClick = onCardClick
             )
             Spacer(modifier = Modifier.height(48.dp))
         }

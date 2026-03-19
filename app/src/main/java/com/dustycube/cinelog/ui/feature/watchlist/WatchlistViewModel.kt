@@ -2,7 +2,7 @@ package com.dustycube.cinelog.ui.feature.watchlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dustycube.cinelog.data.model.UserWatchItem
+import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.data.model.WatchStatus
 import com.dustycube.cinelog.data.repository.WatchlistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,7 +45,7 @@ class WatchlistViewModel @Inject constructor(
         }
     }
 
-    fun onUpdateWatchStatus(item: UserWatchItem, newStatus: WatchStatus) {
+    fun onUpdateWatchStatus(item: WatchItem, newStatus: WatchStatus) {
         viewModelScope.launch {
             watchlistRepository.updateWatchStatus(item, newStatus)
         }

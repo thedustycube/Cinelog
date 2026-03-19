@@ -2,7 +2,7 @@ package com.dustycube.cinelog.data.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.dustycube.cinelog.data.model.UserWatchItem
+import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.data.model.WatchStatus
 import java.time.LocalDateTime
 
@@ -23,4 +23,4 @@ data class WatchlistItemEntity(
     val director: String?,
     val release_date: String?,
     val watchStatusOrder: Int
-) : UserWatchItem
+) : WatchItem

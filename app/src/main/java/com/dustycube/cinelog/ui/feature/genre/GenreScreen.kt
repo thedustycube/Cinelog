@@ -21,12 +21,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.ui.component.BannerHeader
 import com.dustycube.cinelog.ui.component.CardBuilder
 import com.dustycube.cinelog.ui.component.GenreCardBuilder
 
 @Composable
 fun GenreScreen(
+    onCardClick: (WatchItem) -> Unit,
     viewModel: GenreViewModel = hiltViewModel()
 ) {
     val movieGenres by viewModel.movieGenres.collectAsState()
@@ -84,9 +86,10 @@ fun GenreScreen(
                             val movie = moviesByGenre[index]
                             if (movie != null) {
                                 CardBuilder(
-                                    movie,
-                                    viewModel::onUpdateWatchStatus,
-                                    false
+                                    item = movie,
+                                    onUpdateWatchStatus = viewModel::onUpdateWatchStatus,
+                                    isHorizontal = false,
+                                    onCardClick = onCardClick
                                 )
                             }
                         }
@@ -119,9 +122,10 @@ fun GenreScreen(
                             val tvShow = tvShowsByGenre[index]
                             if (tvShow != null) {
                                 CardBuilder(
-                                    tvShow,
-                                    viewModel::onUpdateWatchStatus,
-                                    false
+                                    item = tvShow,
+                                    onUpdateWatchStatus = viewModel::onUpdateWatchStatus,
+                                    isHorizontal = false,
+                                    onCardClick = onCardClick
                                 )
                             }
                         }
