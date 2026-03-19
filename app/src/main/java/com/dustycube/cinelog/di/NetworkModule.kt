@@ -32,8 +32,8 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideCommonRepository(dao: WatchlistDao): CommonRepository {
-        return CommonRepository(dao)
+    fun provideCommonRepository(api: TMDBApiService, dao: WatchlistDao): CommonRepository {
+        return CommonRepository(api, dao)
     }
 
     @Provides

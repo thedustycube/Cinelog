@@ -11,16 +11,16 @@ data class Movie(
     override val poster_path: String?,
     val director: String?,
     val release_date: String?,
+    val original_language: String?,
     override val vote_average: Double?,
     override val vote_count: Int?,
     override val media_type: String?,
     override val watchStatus: WatchStatus,
     override val lastUpdatedTimeStamp: LocalDateTime
-) : UserWatchItem
+) : WatchItem
 
 // backdrop_path: String
 // genre_ids: List<Int>
-// original_language: String
 // original_title: String
 // video: Boolean
 

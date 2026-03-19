@@ -9,15 +9,15 @@ data class TvShow(
     override val overview: String?,
     override val popularity: Double?,
     override val poster_path: String?,
+    val first_air_date: String?,
     override val vote_average: Double?,
     override val vote_count: Int?,
     override val media_type: String?,
     override val watchStatus: WatchStatus,
     override val lastUpdatedTimeStamp: LocalDateTime
-) : UserWatchItem
+) : WatchItem
 
 // backdrop_path: String
-// first_air_date: String - end date
 // genre_ids: List<Int>
 // origin_country: List<String>
 // original_language: String

@@ -29,11 +29,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.dustycube.cinelog.data.model.Movie
+import com.dustycube.cinelog.ui.feature.details.MediaDetailsScreen
 import com.dustycube.cinelog.ui.feature.genre.GenreScreen
 import com.dustycube.cinelog.ui.feature.home.HomeScreen
 import com.dustycube.cinelog.ui.feature.home.TrendingMoviesScreen
@@ -48,9 +52,6 @@ import com.dustycube.cinelog.ui.navigation.Routes
 @Preview
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
-
-
-
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination
@@ -171,34 +172,72 @@ fun MainScreen(modifier: Modifier = Modifier) {
                             navigateToTab(Routes.watchlist)
                         },
                         onNavigateToTrendingMovies = { navController.navigate(Routes.trendingMovies) },
-                        onNavigateToTrendingTvShows = { navController.navigate(Routes.trendingTvShows) }
+                        onNavigateToTrendingTvShows = { navController.navigate(Routes.trendingTvShows) },
+                        onCardClick = { item ->
+                            val type = if (item is Movie) "movie" else "tv"
+                            navController.navigate("${Routes.details}/${item.id}/$type")
+                        }
                     )
                 }
                 composable(
                     Routes.trendingMovies
                 ) {
-                    TrendingMoviesScreen()
+                    TrendingMoviesScreen(
+                        onCardClick = { item ->
+                            val type = if (item is Movie) "movie" else "tv"
+                            navController.navigate("${Routes.details}/${item.id}/$type")
+                        }
+                    )
                 }
                 composable(
                     Routes.trendingTvShows
                 ) {
-                    TrendingTvShowsScreen()
+                    TrendingTvShowsScreen(
+                        onCardClick = { item ->
+                            val type = if (item is Movie) "movie" else "tv"
+                            navController.navigate("${Routes.details}/${item.id}/$type")
+                        }
+                    )
                 }
+            }
+            composable(
+                "${Routes.details}/{itemId}/{media_type}",
+                arguments = listOf(
+                    navArgument("itemId") { type = NavType.IntType },
+                    navArgument("media_type") { type = NavType.StringType }
+                )
+            ) {
+                MediaDetailsScreen()
             }
             composable(
                 Routes.watchlist
             ) {
-                WatchlistScreen()
+                WatchlistScreen(
+                    onCardClick = { item ->
+                        val type = if (item is Movie) "movie" else "tv"
+                        navController.navigate("${Routes.details}/${item.id}/$type")
+                    }
+                )
             }
             composable(
                 Routes.search
             ) {
-                SearchScreen()
+                SearchScreen(
+                    onCardClick = { item ->
+                        val type = if (item is Movie) "movie" else "tv"
+                        navController.navigate("${Routes.details}/${item.id}/$type")
+                    }
+                )
             }
             composable(
                 Routes.genre
             ) {
-                GenreScreen()
+                GenreScreen(
+                    onCardClick = { item ->
+                        val type = if (item is Movie) "movie" else "tv"
+                        navController.navigate("${Routes.details}/${item.id}/$type")
+                    }
+                )
             }
             composable(
                 Routes.settings
@@ -208,4 +247,3 @@ fun MainScreen(modifier: Modifier = Modifier) {
         }
     }
 }
-

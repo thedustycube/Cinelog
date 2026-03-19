@@ -7,7 +7,7 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import com.dustycube.cinelog.data.model.Movie
 import com.dustycube.cinelog.data.model.TvShow
-import com.dustycube.cinelog.data.model.UserWatchItem
+import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.data.model.WatchStatus
 import com.dustycube.cinelog.data.repository.CommonRepository
 import com.dustycube.cinelog.data.repository.HomeRepository
@@ -53,7 +53,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun onUpdateWatchStatus(item: UserWatchItem, newStatus: WatchStatus) {
+    fun onUpdateWatchStatus(item: WatchItem, newStatus: WatchStatus) {
         viewModelScope.launch {
             homeRepository.updateWatchStatus(item, newStatus)
         }

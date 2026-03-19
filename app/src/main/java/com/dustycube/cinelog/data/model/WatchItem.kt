@@ -2,7 +2,7 @@ package com.dustycube.cinelog.data.model
 
 import java.time.LocalDateTime
 
-interface UserWatchItem {
+interface WatchItem {
     val id: Int
     val adult: Boolean?
     val overview: String?

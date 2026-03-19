@@ -17,10 +17,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.ui.component.CardBuilder
 
 @Composable
 fun TrendingTvShowsScreen(
+    onCardClick: (WatchItem) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val trendingTvShows = viewModel.trendingTvShows.collectAsLazyPagingItems()
@@ -42,7 +44,12 @@ fun TrendingTvShowsScreen(
                 items(trendingTvShows.itemCount) { index ->
                     val searchItem = trendingTvShows[index]
                     if (searchItem != null) {
-                        CardBuilder(searchItem, viewModel::onUpdateWatchStatus, false)
+                        CardBuilder(
+                            item = searchItem,
+                            onUpdateWatchStatus = viewModel::onUpdateWatchStatus,
+                            isHorizontal = false,
+                            onCardClick = onCardClick
+                        )
                     }
                 }
             }

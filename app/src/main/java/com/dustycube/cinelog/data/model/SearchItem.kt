@@ -15,7 +15,7 @@ data class SearchItem(
     override val vote_count: Int?,
     override val watchStatus: WatchStatus,
     override val lastUpdatedTimeStamp: LocalDateTime
-): UserWatchItem
+): WatchItem
 
 data class SearchResponse(
     val results: List<SearchItem>,

@@ -28,12 +28,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.ui.component.BannerHeader
 import com.dustycube.cinelog.ui.component.CardBuilder
 
 @Preview
 @Composable
 fun SearchScreen(
+    onCardClick: (WatchItem) -> Unit,
     viewModel: SearchViewModel = hiltViewModel()
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -73,7 +75,12 @@ fun SearchScreen(
             items(searchResults.itemCount) { index ->
                 val searchItem = searchResults[index]
                 if (searchItem != null) {
-                    CardBuilder(searchItem, viewModel::onUpdateWatchStatus, false)
+                    CardBuilder(
+                        item = searchItem,
+                        onUpdateWatchStatus = viewModel::onUpdateWatchStatus,
+                        isHorizontal = false,
+                        onCardClick = onCardClick
+                    )
                 }
             }
         }

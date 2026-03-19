@@ -46,10 +46,10 @@ import com.dustycube.cinelog.R
 import com.dustycube.cinelog.data.model.Movie
 import com.dustycube.cinelog.data.model.SearchItem
 import com.dustycube.cinelog.data.model.TvShow
-import com.dustycube.cinelog.data.model.UserWatchItem
+import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.data.model.WatchStatus
 
-fun isMovieOrTvShow(item: UserWatchItem): String? {
+fun isMovieOrTvShow(item: WatchItem): String? {
     return when (item) {
         is Movie -> item.title
         is TvShow -> item.name
@@ -60,8 +60,8 @@ fun isMovieOrTvShow(item: UserWatchItem): String? {
 
 @Composable
 fun CardPoster(
-    item: UserWatchItem,
-    onUpdateWatchStatus: (UserWatchItem, WatchStatus) -> Unit
+    item: WatchItem,
+    onUpdateWatchStatus: (WatchItem, WatchStatus) -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
@@ -120,7 +120,7 @@ fun CardPoster(
 
 @Composable
 fun CardTitle(
-    item: UserWatchItem
+    item: WatchItem
 ) {
     Row(
         modifier = Modifier
@@ -138,15 +138,17 @@ fun CardTitle(
 
 @Composable
 fun CardBuilder(
-    item: UserWatchItem,
-    onUpdateWatchStatus: (UserWatchItem, WatchStatus) -> Unit,
-    isHorizontal: Boolean
+    item: WatchItem,
+    onUpdateWatchStatus: (WatchItem, WatchStatus) -> Unit,
+    isHorizontal: Boolean,
+    onCardClick: (WatchItem) -> Unit
 ) {
     if(isHorizontal) {
         Card(
             modifier = Modifier
                 .height(200.dp)
                 .width(120.dp)
+                .clickable { onCardClick(item) }
         ) {
             CardPoster(item, onUpdateWatchStatus)
             // CardTitle(item)
@@ -199,10 +201,11 @@ fun BannerHeader(
 @Composable
 fun HorizontalList(
     bannerName: String,
-    watchItems: List<UserWatchItem>,
-    onUpdateWatchStatus: (UserWatchItem, WatchStatus) -> Unit,
+    watchItems: List<WatchItem>,
+    onUpdateWatchStatus: (WatchItem, WatchStatus) -> Unit,
     onHeaderClick: () -> Unit,
-    hasIcon: Boolean
+    hasIcon: Boolean,
+    onCardClick: (WatchItem) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         BannerHeader(bannerName, onHeaderClick, hasIcon)
@@ -210,7 +213,7 @@ fun HorizontalList(
             modifier = Modifier.padding(start = 4.dp, top = 4.dp)
         ) {
             items(watchItems) { item ->
-                CardBuilder(item, onUpdateWatchStatus, true)
+                CardBuilder(item = item, onUpdateWatchStatus = onUpdateWatchStatus, isHorizontal = true, onCardClick = onCardClick)
             }
         }
     }
@@ -219,10 +222,11 @@ fun HorizontalList(
 @Composable
 fun VerticalList(
     bannerName: String,
-    watchItems: List<UserWatchItem>,
-    onUpdateWatchStatus: (UserWatchItem, WatchStatus) -> Unit,
+    watchItems: List<WatchItem>,
+    onUpdateWatchStatus: (WatchItem, WatchStatus) -> Unit,
     onHeaderClick: () -> Unit,
-    hasIcon: Boolean
+    hasIcon: Boolean,
+    onCardClick: (WatchItem) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         BannerHeader(bannerName, onHeaderClick, hasIcon)
@@ -233,7 +237,7 @@ fun VerticalList(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             items(watchItems) { item ->
-                CardBuilder(item, onUpdateWatchStatus, false)
+                CardBuilder(item = item, onUpdateWatchStatus = onUpdateWatchStatus, isHorizontal = false, onCardClick = onCardClick)
             }
         }
     }
@@ -242,12 +246,26 @@ fun VerticalList(
 @Composable
 fun BannerAndCardBuilder(
     bannerName: String,
-    watchItems: List<UserWatchItem>,
-    onUpdateWatchStatus: (UserWatchItem, WatchStatus) -> Unit,
+    watchItems: List<WatchItem>,
+    onUpdateWatchStatus: (WatchItem, WatchStatus) -> Unit,
     onHeaderClick: () -> Unit = { },
     isHorizontal: Boolean = true,
-    hasIcon: Boolean = true
+    hasIcon: Boolean = true,
+    onCardClick: (WatchItem) -> Unit = { }
 ) {
-    if(isHorizontal) HorizontalList(bannerName, watchItems, onUpdateWatchStatus, onHeaderClick, hasIcon)
-    else VerticalList(bannerName, watchItems, onUpdateWatchStatus, onHeaderClick, hasIcon)
+    if(isHorizontal) HorizontalList(
+        bannerName = bannerName,
+        watchItems = watchItems,
+        onUpdateWatchStatus = onUpdateWatchStatus,
+        onHeaderClick = onHeaderClick,
+        hasIcon = hasIcon,
+        onCardClick = onCardClick)
+    else VerticalList(
+        bannerName = bannerName,
+        watchItems = watchItems,
+        onUpdateWatchStatus = onUpdateWatchStatus,
+        onHeaderClick = onHeaderClick,
+        hasIcon = hasIcon,
+        onCardClick = onCardClick
+    )
 }

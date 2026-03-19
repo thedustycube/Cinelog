@@ -5,7 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.dustycube.cinelog.data.api.TMDBApiService
 import com.dustycube.cinelog.data.model.SearchItem
-import com.dustycube.cinelog.data.model.UserWatchItem
+import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.data.model.WatchStatus
 import com.dustycube.cinelog.data.paging.UniversalPagingSource
 import kotlinx.coroutines.flow.Flow
@@ -35,7 +35,7 @@ class SearchRepository(
     }
 
     suspend fun updateWatchStatus(
-        item: UserWatchItem,
+        item: WatchItem,
         newStatus: WatchStatus
     ) {
         commonRepository.updateWatchStatus(item, newStatus)

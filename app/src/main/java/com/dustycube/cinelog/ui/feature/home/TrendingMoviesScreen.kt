@@ -17,10 +17,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.ui.component.CardBuilder
 
 @Composable
 fun TrendingMoviesScreen(
+    onCardClick: (WatchItem) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val trendingMovies = viewModel.trendingMovies.collectAsLazyPagingItems()
@@ -42,7 +44,12 @@ fun TrendingMoviesScreen(
                 items(trendingMovies.itemCount) { index ->
                     val searchItem = trendingMovies[index]
                     if (searchItem != null) {
-                        CardBuilder(searchItem, viewModel::onUpdateWatchStatus, false)
+                        CardBuilder(
+                            item = searchItem,
+                            onUpdateWatchStatus = viewModel::onUpdateWatchStatus,
+                            isHorizontal = false,
+                            onCardClick = onCardClick
+                        )
                     }
                 }
             }

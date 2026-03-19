@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.ui.component.BannerAndCardBuilder
 
 
@@ -25,6 +26,7 @@ fun HomeScreen(
     onNavigateToWatchlist: () -> Unit,
     onNavigateToTrendingMovies: () -> Unit,
     onNavigateToTrendingTvShows: () -> Unit,
+    onCardClick: (WatchItem) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val watchlist by viewModel.watchlist.collectAsState()
@@ -43,21 +45,24 @@ fun HomeScreen(
             BannerAndCardBuilder("Watchlist",
                 watchlist,
                 viewModel::onUpdateWatchStatus,
-                onHeaderClick = onNavigateToWatchlist
+                onHeaderClick = onNavigateToWatchlist,
+                onCardClick = onCardClick
             )
             Spacer(modifier = Modifier.height(48.dp))
             BannerAndCardBuilder(
                 "Trending Movies",
                 trendingMovies.itemSnapshotList.items,
                 viewModel::onUpdateWatchStatus,
-                onHeaderClick = onNavigateToTrendingMovies
+                onHeaderClick = onNavigateToTrendingMovies,
+                onCardClick = onCardClick
             )
             Spacer(modifier = Modifier.height(48.dp))
             BannerAndCardBuilder(
                 "Trending TV Shows",
                 trendingTvShows.itemSnapshotList.items,
                 viewModel::onUpdateWatchStatus,
-                onHeaderClick = onNavigateToTrendingTvShows
+                onHeaderClick = onNavigateToTrendingTvShows,
+                onCardClick = onCardClick
             )
             Spacer(modifier = Modifier.height(48.dp))
         }

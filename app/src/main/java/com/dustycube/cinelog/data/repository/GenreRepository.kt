@@ -7,7 +7,7 @@ import com.dustycube.cinelog.data.api.TMDBApiService
 import com.dustycube.cinelog.data.model.Genre
 import com.dustycube.cinelog.data.model.Movie
 import com.dustycube.cinelog.data.model.TvShow
-import com.dustycube.cinelog.data.model.UserWatchItem
+import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.data.model.WatchStatus
 import com.dustycube.cinelog.data.paging.UniversalPagingSource
 import kotlinx.coroutines.flow.Flow
@@ -82,7 +82,7 @@ class GenreRepository(
     }
 
     suspend fun updateWatchStatus(
-        item: UserWatchItem,
+        item: WatchItem,
         newStatus: WatchStatus
     ) {
         commonRepository.updateWatchStatus(item, newStatus)

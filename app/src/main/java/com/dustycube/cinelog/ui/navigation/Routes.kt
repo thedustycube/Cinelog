@@ -9,4 +9,5 @@ object Routes {
     const val settings = "settings"
     const val trendingMovies = "trending_movies"
     const val trendingTvShows = "trending_tv_shows"
+    const val details = "details"
 }
