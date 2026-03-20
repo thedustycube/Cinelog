@@ -70,13 +70,14 @@ interface TMDBApiService {
     @GET("movie/{movie_id}")
     suspend fun getMovieDetailsById(
         @Path("movie_id") id: Int,
+        @Query("append_to_response") append: String = "credits",
         @Header("Authorization") token: String = accessToken
     ): Movie
 
     @GET("tv/{series_id}")
     suspend fun getTvShowDetailsById(
+        @Path("series_id") id: Int,
         @Query("language") lang: String = "en-US",
-        @Query("series_id") id: Int,
         @Header("Authorization") token: String = accessToken
     ): TvShow
 }

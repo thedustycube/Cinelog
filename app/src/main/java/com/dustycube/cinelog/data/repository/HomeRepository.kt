@@ -31,6 +31,7 @@ class HomeRepository(
                     val response = api.getTrendingMovies(page = page, token = accessToken)
                     response.results.map { trendingMovie ->
                         trendingMovie.copy(
+                            media_type = "movie",
                             watchStatus = WatchStatus.NONE,
                             lastUpdatedTimeStamp = LocalDateTime.now()
                         )
@@ -48,6 +49,7 @@ class HomeRepository(
                     val response = api.getTrendingTvShows(page = page, token = accessToken)
                     response.results.map { trendingTvShow ->
                         trendingTvShow.copy(
+                            media_type = "tv",
                             watchStatus = WatchStatus.NONE,
                             lastUpdatedTimeStamp = LocalDateTime.now()
                         )

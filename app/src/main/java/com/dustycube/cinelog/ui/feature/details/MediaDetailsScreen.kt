@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -73,7 +74,7 @@ fun DetailsBlock(
         Row(
             modifier = Modifier.fillMaxWidth()
                 .height(IntrinsicSize.Max)
-                .padding(start = 8.dp, top = 8.dp)
+                .padding(start = 8.dp, top = 8.dp, end = 8.dp)
         ) {
             CardBuilder(
                 item = item,
@@ -84,12 +85,11 @@ fun DetailsBlock(
             Spacer(modifier = Modifier.width(28.dp))
             Column(
                 modifier = Modifier.fillMaxHeight()
-                    .padding(top = 16.dp),
-                verticalArrangement = Arrangement.Bottom
+                    .padding(top = 16.dp)
             ) {
-
                 Text(
                     text = getTitleOrName(item) ?: "",
+                    modifier = Modifier.weight(1f),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Light
                 )
@@ -98,7 +98,7 @@ fun DetailsBlock(
         }
         Card(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 20.dp)
-                .height(60.dp)
+                .height(80.dp)
                 .fillMaxWidth(),
             colors = CardDefaults.cardColors(
                 containerColor = Color.LightGray
@@ -138,14 +138,13 @@ fun PrintDateAndDirector(item: WatchItem) {
     when (item) {
         is Movie -> {
             release = LocalDate.parse(item.release_date)
-            director = item.director
+            director = item.credits?.crew?.find { it.job == "Director" }?.name ?: "Unknown"
         }
         is TvShow -> {
             release = LocalDate.parse(item.first_air_date)
         }
         else -> return
     }
-
     Text(
         "${release.month} ${release.dayOfMonth}, ${release.year}",
         modifier = Modifier.padding(vertical = 4.dp)
@@ -165,11 +164,11 @@ fun CardBlock(
 
     when (item) {
         is Movie -> {
-            mediaType = "movie"
+            mediaType = "Movie"
             language = item.original_language ?: ""
         }
         else -> {
-            mediaType = "tv"
+            mediaType = "TV"
             language = null
         }
     }
@@ -177,7 +176,7 @@ fun CardBlock(
     if (language != null) {
         CardBlockHelper("Language", language)
     }
-    CardBlockHelper("Popularity", popularity.toString())
+    CardBlockHelper("Popularity", "%.2f".format(popularity))
 }
 
 @Composable
@@ -194,7 +193,8 @@ fun CardBlockHelper(
         Text(header)
         Text(
             mediaType,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center
         )
     }
 }

@@ -37,6 +37,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.dustycube.cinelog.data.model.Movie
+import com.dustycube.cinelog.data.model.TvShow
 import com.dustycube.cinelog.ui.feature.details.MediaDetailsScreen
 import com.dustycube.cinelog.ui.feature.genre.GenreScreen
 import com.dustycube.cinelog.ui.feature.home.HomeScreen
@@ -174,7 +175,11 @@ fun MainScreen(modifier: Modifier = Modifier) {
                         onNavigateToTrendingMovies = { navController.navigate(Routes.trendingMovies) },
                         onNavigateToTrendingTvShows = { navController.navigate(Routes.trendingTvShows) },
                         onCardClick = { item ->
-                            val type = if (item is Movie) "movie" else "tv"
+                            val type = when (item) {
+                                is Movie -> "movie"
+                                is TvShow -> "tv"
+                                else -> item.media_type ?: "movie"
+                            }
                             navController.navigate("${Routes.details}/${item.id}/$type")
                         }
                     )
@@ -184,7 +189,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 ) {
                     TrendingMoviesScreen(
                         onCardClick = { item ->
-                            val type = if (item is Movie) "movie" else "tv"
+                            val type = "movie"
                             navController.navigate("${Routes.details}/${item.id}/$type")
                         }
                     )
@@ -194,7 +199,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 ) {
                     TrendingTvShowsScreen(
                         onCardClick = { item ->
-                            val type = if (item is Movie) "movie" else "tv"
+                            val type = "tv"
                             navController.navigate("${Routes.details}/${item.id}/$type")
                         }
                     )
@@ -214,7 +219,11 @@ fun MainScreen(modifier: Modifier = Modifier) {
             ) {
                 WatchlistScreen(
                     onCardClick = { item ->
-                        val type = if (item is Movie) "movie" else "tv"
+                        val type = when (item) {
+                            is Movie -> "movie"
+                            is TvShow -> "tv"
+                            else -> item.media_type ?: "movie"
+                        }
                         navController.navigate("${Routes.details}/${item.id}/$type")
                     }
                 )
@@ -224,7 +233,11 @@ fun MainScreen(modifier: Modifier = Modifier) {
             ) {
                 SearchScreen(
                     onCardClick = { item ->
-                        val type = if (item is Movie) "movie" else "tv"
+                        val type = when (item) {
+                            is Movie -> "movie"
+                            is TvShow -> "tv"
+                            else -> item.media_type ?: "movie"
+                        }
                         navController.navigate("${Routes.details}/${item.id}/$type")
                     }
                 )
@@ -234,7 +247,11 @@ fun MainScreen(modifier: Modifier = Modifier) {
             ) {
                 GenreScreen(
                     onCardClick = { item ->
-                        val type = if (item is Movie) "movie" else "tv"
+                        val type = when (item) {
+                            is Movie -> "movie"
+                            is TvShow -> "tv"
+                            else -> item.media_type ?: "movie"
+                        }
                         navController.navigate("${Routes.details}/${item.id}/$type")
                     }
                 )
