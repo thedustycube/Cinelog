@@ -43,7 +43,8 @@ fun WatchlistScreen(
                 onUpdateWatchStatus = viewModel::onUpdateWatchStatus,
                 isHorizontal = false,
                 hasIcon = false,
-                onCardClick = onCardClick
+                onCardClick = onCardClick,
+                hasStatusBox = false
             )
             Spacer(modifier = Modifier.height(48.dp))
         }

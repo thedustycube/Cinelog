@@ -61,10 +61,9 @@ fun isMovieOrTvShow(item: WatchItem): String? {
 @Composable
 fun CardPoster(
     item: WatchItem,
-    onUpdateWatchStatus: (WatchItem, WatchStatus) -> Unit
+    onUpdateWatchStatus: (WatchItem, WatchStatus) -> Unit,
+    hasStatusBox: Boolean
 ) {
-    var showMenu by remember { mutableStateOf(false) }
-
     Box {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
@@ -80,39 +79,55 @@ fun CardPoster(
                 // .clip(RoundedCornerShape(8.dp))
             contentScale = ContentScale.FillBounds
         )
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .clip(
-                    RoundedCornerShape(
-                        bottomStart = 8.dp
-                    )
-                )
-                .background(Color(0xFFE8E2DB))
-                .padding(2.dp)
-                .clickable { showMenu = true }
-        ) {
-            Icon(
-                imageVector = item.watchStatus.icon,
-                contentDescription = item.watchStatus.name
-                // tint = Color(0xFFE8E2DB)
+        if (hasStatusBox) {
+            StatusBox(
+                modifier = Modifier.align(Alignment.TopEnd),
+                item,
+                onUpdateWatchStatus
             )
-            DropdownMenu(
-                modifier = Modifier,
-                expanded = showMenu,
-                onDismissRequest = { showMenu = false }
-            ) {
-                WatchStatus.entries.forEach { status ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(status.name)
-                        },
-                        onClick = {
-                            onUpdateWatchStatus(item, status)
-                            showMenu = false
-                        }
-                    )
-                }
+        }
+    }
+}
+
+@Composable
+fun StatusBox(
+    modifier: Modifier,
+    item: WatchItem,
+    onUpdateWatchStatus: (WatchItem, WatchStatus) -> Unit
+) {
+    var showMenu by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = modifier
+            .clip(
+                RoundedCornerShape(
+                    bottomStart = 8.dp
+                )
+            )
+            .background(Color(0xFFE8E2DB))
+            .padding(2.dp)
+            .clickable { showMenu = true }
+    ) {
+        Icon(
+            imageVector = item.watchStatus.icon,
+            contentDescription = item.watchStatus.name
+            // tint = Color(0xFFE8E2DB)
+        )
+        DropdownMenu(
+            modifier = Modifier,
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false }
+        ) {
+            WatchStatus.entries.forEach { status ->
+                DropdownMenuItem(
+                    text = {
+                        Text(status.name)
+                    },
+                    onClick = {
+                        onUpdateWatchStatus(item, status)
+                        showMenu = false
+                    }
+                )
             }
         }
     }
@@ -141,28 +156,39 @@ fun CardBuilder(
     item: WatchItem,
     onUpdateWatchStatus: (WatchItem, WatchStatus) -> Unit,
     isHorizontal: Boolean,
-    onCardClick: (WatchItem) -> Unit
+    onCardClick: (WatchItem) -> Unit,
+    hasStatusBox: Boolean = true
 ) {
-    if(isHorizontal) {
-        Card(
-            modifier = Modifier
-                .height(200.dp)
-                .width(120.dp)
-                .clickable { onCardClick(item) }
-        ) {
-            CardPoster(item, onUpdateWatchStatus)
-            // CardTitle(item)
+    if (hasStatusBox) {
+        if(isHorizontal) {
+            Card(
+                modifier = Modifier
+                    .height(200.dp)
+                    .width(120.dp)
+                    .clickable { onCardClick(item) }
+            ) {
+                CardPoster(item, onUpdateWatchStatus, hasStatusBox)
+                // CardTitle(item)
+            }
+            Spacer(modifier = Modifier.width(4.dp))
+        } else {
+            Card(
+                modifier = Modifier
+                    .height(200.dp)
+                    .width(120.dp)
+                    .clickable { onCardClick(item) }
+            ) {
+                CardPoster(item, onUpdateWatchStatus, hasStatusBox)
+                // CardTitle(item)
+            }
         }
-        Spacer(modifier = Modifier.width(4.dp))
     } else {
         Card(
             modifier = Modifier
                 .height(200.dp)
                 .width(120.dp)
-                .clickable { onCardClick(item) }
         ) {
-            CardPoster(item, onUpdateWatchStatus)
-            // CardTitle(item)
+            CardPoster(item, onUpdateWatchStatus, hasStatusBox)
         }
     }
 }
@@ -206,7 +232,8 @@ fun HorizontalList(
     onUpdateWatchStatus: (WatchItem, WatchStatus) -> Unit,
     onHeaderClick: () -> Unit,
     hasIcon: Boolean,
-    onCardClick: (WatchItem) -> Unit
+    onCardClick: (WatchItem) -> Unit,
+    hasStatusBox: Boolean
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         BannerHeader(bannerName, onHeaderClick, hasIcon)
@@ -214,7 +241,13 @@ fun HorizontalList(
             modifier = Modifier.padding(start = 4.dp, top = 4.dp)
         ) {
             items(watchItems) { item ->
-                CardBuilder(item = item, onUpdateWatchStatus = onUpdateWatchStatus, isHorizontal = true, onCardClick = onCardClick)
+                CardBuilder(
+                    item = item,
+                    onUpdateWatchStatus = onUpdateWatchStatus,
+                    isHorizontal = true,
+                    onCardClick = onCardClick,
+                    hasStatusBox = hasStatusBox
+                )
             }
         }
     }
@@ -227,7 +260,8 @@ fun VerticalList(
     onUpdateWatchStatus: (WatchItem, WatchStatus) -> Unit,
     onHeaderClick: () -> Unit,
     hasIcon: Boolean,
-    onCardClick: (WatchItem) -> Unit
+    onCardClick: (WatchItem) -> Unit,
+    hasStatusBox: Boolean
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         BannerHeader(bannerName, onHeaderClick, hasIcon)
@@ -238,7 +272,13 @@ fun VerticalList(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             items(watchItems) { item ->
-                CardBuilder(item = item, onUpdateWatchStatus = onUpdateWatchStatus, isHorizontal = false, onCardClick = onCardClick)
+                CardBuilder(
+                    item = item,
+                    onUpdateWatchStatus = onUpdateWatchStatus,
+                    isHorizontal = false,
+                    onCardClick = onCardClick,
+                    hasStatusBox = hasStatusBox
+                )
             }
         }
     }
@@ -252,7 +292,8 @@ fun BannerAndCardBuilder(
     onHeaderClick: () -> Unit = { },
     isHorizontal: Boolean = true,
     hasIcon: Boolean = true,
-    onCardClick: (WatchItem) -> Unit = { }
+    onCardClick: (WatchItem) -> Unit = { },
+    hasStatusBox: Boolean = true
 ) {
     if(isHorizontal) HorizontalList(
         bannerName = bannerName,
@@ -260,13 +301,16 @@ fun BannerAndCardBuilder(
         onUpdateWatchStatus = onUpdateWatchStatus,
         onHeaderClick = onHeaderClick,
         hasIcon = hasIcon,
-        onCardClick = onCardClick)
+        onCardClick = onCardClick,
+        hasStatusBox = hasStatusBox
+    )
     else VerticalList(
         bannerName = bannerName,
         watchItems = watchItems,
         onUpdateWatchStatus = onUpdateWatchStatus,
         onHeaderClick = onHeaderClick,
         hasIcon = hasIcon,
-        onCardClick = onCardClick
+        onCardClick = onCardClick,
+        hasStatusBox = hasStatusBox
     )
 }

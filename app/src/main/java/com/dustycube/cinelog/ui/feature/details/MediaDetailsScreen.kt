@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -33,6 +35,7 @@ import com.dustycube.cinelog.data.model.Movie
 import com.dustycube.cinelog.data.model.TvShow
 import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.ui.component.CardBuilder
+import com.dustycube.cinelog.ui.component.StatusBox
 import java.time.LocalDate
 
 @Composable
@@ -80,20 +83,35 @@ fun DetailsBlock(
                 item = item,
                 onUpdateWatchStatus = { _, _ -> },
                 isHorizontal = false,
-                onCardClick = {  }
+                onCardClick = {  },
+                hasStatusBox = false
             )
             Spacer(modifier = Modifier.width(28.dp))
             Column(
-                modifier = Modifier.fillMaxHeight()
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
                     .padding(top = 16.dp)
             ) {
                 Text(
                     text = getTitleOrName(item) ?: "",
                     modifier = Modifier.weight(1f),
                     fontSize = 24.sp,
-                    fontWeight = FontWeight.Light
+                    fontWeight = FontWeight.Light,
+                    maxLines = 2
                 )
                 PrintDateAndDirector(item)
+            }
+            Column(
+                modifier = Modifier.wrapContentSize(),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Top
+            ) {
+                StatusBox(
+                    modifier = Modifier,
+                    item = item,
+                    onUpdateWatchStatus = { _, _ -> }
+                )
             }
         }
         Card(
