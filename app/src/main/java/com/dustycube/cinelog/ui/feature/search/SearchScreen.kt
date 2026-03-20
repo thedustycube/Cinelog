@@ -32,7 +32,6 @@ import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.ui.component.BannerHeader
 import com.dustycube.cinelog.ui.component.CardBuilder
 
-@Preview
 @Composable
 fun SearchScreen(
     onCardClick: (WatchItem) -> Unit,
@@ -79,7 +78,8 @@ fun SearchScreen(
                         item = searchItem,
                         onUpdateWatchStatus = viewModel::onUpdateWatchStatus,
                         isHorizontal = false,
-                        onCardClick = onCardClick
+                        onCardClick = onCardClick,
+                        hasStatusBox = true
                     )
                 }
             }
