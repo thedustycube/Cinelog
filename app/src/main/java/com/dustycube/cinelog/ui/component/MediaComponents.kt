@@ -159,6 +159,7 @@ fun CardBuilder(
             modifier = Modifier
                 .height(200.dp)
                 .width(120.dp)
+                .clickable { onCardClick(item) }
         ) {
             CardPoster(item, onUpdateWatchStatus)
             // CardTitle(item)

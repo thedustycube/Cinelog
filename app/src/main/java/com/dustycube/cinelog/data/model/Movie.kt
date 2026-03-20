@@ -14,6 +14,7 @@ data class Movie(
     val original_language: String?,
     override val vote_average: Double?,
     override val vote_count: Int?,
+    val credits: Credits?,
     override val media_type: String?,
     override val watchStatus: WatchStatus,
     override val lastUpdatedTimeStamp: LocalDateTime
