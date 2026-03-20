@@ -1,6 +1,7 @@
 package com.dustycube.cinelog.ui.feature.details
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,9 +14,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -31,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.dustycube.cinelog.data.model.Movie
 import com.dustycube.cinelog.data.model.TvShow
 import com.dustycube.cinelog.data.model.WatchItem
@@ -52,7 +55,7 @@ fun MediaDetailsScreen(
         }
         is DetailUiState.Success -> {
             val item = (uiState as DetailUiState.Success).item
-            if (item != null) DetailsBlock(item)
+            if (item != null) DetailsBlock(item, viewModel)
             else Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(text = "you gay")
             }
@@ -68,7 +71,8 @@ fun MediaDetailsScreen(
 
 @Composable
 fun DetailsBlock(
-    item: WatchItem
+    item: WatchItem,
+    viewModel: MediaDetailsViewModel
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -107,11 +111,17 @@ fun DetailsBlock(
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.Top
             ) {
-                StatusBox(
-                    modifier = Modifier,
-                    item = item,
-                    onUpdateWatchStatus = { _, _ -> }
-                )
+                Box(
+                    modifier = Modifier.wrapContentSize()
+                        .border(1.dp, color = Color.Black, shape = RoundedCornerShape(8.dp))
+                ) {
+                    StatusBox(
+                        modifier = Modifier,
+                        item = item,
+                        onUpdateWatchStatus = viewModel::onUpdateWatchStatus
+                    )
+                }
+
             }
         }
         Card(
@@ -138,6 +148,7 @@ fun DetailsBlock(
             "${item.overview}",
             modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp)
         )
+        if (item is TvShow) TvShowDetailsHelper(item)
     }
 }
 
@@ -185,8 +196,12 @@ fun CardBlock(
             mediaType = "Movie"
             language = item.original_language ?: ""
         }
-        else -> {
+        is TvShow -> {
             mediaType = "TV"
+            language = item.original_language ?: ""
+        }
+        else -> {
+            mediaType = "unknown"
             language = null
         }
     }

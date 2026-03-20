@@ -25,7 +25,6 @@ class CommonRepository(
     fun getFullWatchlist(): Flow<List<WatchlistItemEntity>> = dao.getFullWatchlist()
 
     suspend fun getItemById(itemId: Int, mediaType: String): WatchItem? {
-        Log.d("CommonRepository: ", "Unknown media type: $itemId $mediaType")
         return try {
             when (mediaType) {
                 "movie" -> {
@@ -43,12 +42,10 @@ class CommonRepository(
                     )
                 }
                 else -> {
-                    Log.w("CommonRepository: ", "Unknown media type: $mediaType")
                     null
                 }
             }
         } catch (e: Exception) {
-            Log.e("CommonRepository: Failed to get item by id. Error: ", e.toString())
             null
         }
     }
