@@ -4,13 +4,21 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dustycube.cinelog.data.model.Movie
+import com.dustycube.cinelog.data.model.TvShow
 import com.dustycube.cinelog.data.model.WatchItem
+import com.dustycube.cinelog.data.model.WatchStatus
 import com.dustycube.cinelog.data.repository.CommonRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,16 +29,34 @@ class MediaDetailsViewModel @Inject constructor(
     private val itemId: Int = checkNotNull(savedStateHandle["itemId"])
     private val mediaType: String = checkNotNull(savedStateHandle["media_type"])
 
-    val uiState: StateFlow<DetailUiState> = flow {
-        emit(DetailUiState.Loading)
-        try {
-            val item = commonRepository.getItemById(itemId, mediaType)
-            emit(DetailUiState.Success(item))
-        } catch (e: Exception) {
+    val uiState: StateFlow<DetailUiState> = combine(
+        flow {
+            emit(commonRepository.getItemById(itemId, mediaType))
+        },
+        commonRepository.getFullWatchlist()
+    ) { item, watchlistItems ->
+        val savedItem = watchlistItems.find { it.id == itemId }
+        DetailUiState.Success(
+            when (item) {
+                is Movie -> item.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
+                is TvShow -> item.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
+                else -> null
+            }
+        )
+    }
+        .map<DetailUiState, DetailUiState> { it }
+        .catch { e ->
             emit(DetailUiState.Error(e.message ?: "Something went wrong"))
-            Log.e("MediaDetailsViewModel: failed to get the item. Error: ", e.toString())
+            Log.e("MediaDetailsViewModel", "Failed to get the item. Error: $e")
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), DetailUiState.Loading)
+        .onStart { emit(DetailUiState.Loading) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), DetailUiState.Loading)
+
+    fun onUpdateWatchStatus(item: WatchItem, newStatus: WatchStatus) {
+        viewModelScope.launch {
+            commonRepository.updateWatchStatus(item, newStatus)
+        }
+    }
 }
 
 sealed class DetailUiState {

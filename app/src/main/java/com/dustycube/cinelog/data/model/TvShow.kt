@@ -9,6 +9,9 @@ data class TvShow(
     override val overview: String?,
     override val popularity: Double?,
     override val poster_path: String?,
+    override val original_language: String?,
+    val number_of_seasons: Int?,
+    val number_of_episodes: Int?,
     val first_air_date: String?,
     override val vote_average: Double?,
     override val vote_count: Int?,
@@ -20,7 +23,6 @@ data class TvShow(
 // backdrop_path: String
 // genre_ids: List<Int>
 // origin_country: List<String>
-// original_language: String
 // original_name: String
 
 data class TrendingTvResponse(

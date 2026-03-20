@@ -13,6 +13,7 @@ data class WatchlistItemEntity(
     override val overview: String,
     override val popularity: Double,
     override val poster_path: String?,
+    override val original_language: String?,
     override val vote_average: Double?,
     override val vote_count: Int,
     override val media_type: String,
@@ -20,6 +21,8 @@ data class WatchlistItemEntity(
     override val lastUpdatedTimeStamp: LocalDateTime,
     val title: String?,
     val name: String?,
+    val number_of_seasons: Int?,
+    val number_of_episodes: Int?,
     val director: String?,
     val release_date: String?,
     val watchStatusOrder: Int
