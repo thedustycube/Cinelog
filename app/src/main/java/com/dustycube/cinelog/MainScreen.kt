@@ -29,6 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -67,6 +69,18 @@ fun MainScreen(modifier: Modifier = Modifier) {
         }
     }
 
+    fun NavGraphBuilder.detailsScreen(navController: NavHostController) {
+        composable(
+            "${Routes.details}/{itemId}/{media_type}",
+            arguments = listOf(
+                navArgument("itemId") { type = NavType.IntType },
+                navArgument("media_type") { type = NavType.StringType }
+            )
+        ) {
+            MediaDetailsScreen()
+        }
+    }
+
     val navItems = listOf(
         NavItem(
             label = "Home",
@@ -77,22 +91,22 @@ fun MainScreen(modifier: Modifier = Modifier) {
         ),
         NavItem(
             label = "Watchlist",
-            route = Routes.watchlist,
-            rootRoute = "",
+            route = Routes.watchlistTab,
+            rootRoute = Routes.watchlist,
             selectedIcon = Icons.Filled.Bookmarks,
             idleIcon = Icons.Outlined.Bookmarks
         ),
         NavItem(
             label = "Search",
-            route = Routes.search,
-            rootRoute = "",
+            route = Routes.searchTab,
+            rootRoute = Routes.search,
             selectedIcon = Icons.Filled.Search,
             idleIcon = Icons.Outlined.Search
         ),
         NavItem(
             label = "Genres",
-            route = Routes.genre,
-            rootRoute = "",
+            route = Routes.genreTab,
+            rootRoute = Routes.genre,
             selectedIcon = Icons.Filled.Category,
             idleIcon = Icons.Outlined.Category
         ),
@@ -104,7 +118,6 @@ fun MainScreen(modifier: Modifier = Modifier) {
             idleIcon = Icons.Outlined.Settings
         )
     )
-
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -204,57 +217,52 @@ fun MainScreen(modifier: Modifier = Modifier) {
                         }
                     )
                 }
+                detailsScreen(navController)
             }
-            composable(
-                "${Routes.details}/{itemId}/{media_type}",
-                arguments = listOf(
-                    navArgument("itemId") { type = NavType.IntType },
-                    navArgument("media_type") { type = NavType.StringType }
-                )
-            ) {
-                MediaDetailsScreen()
-            }
-            composable(
-                Routes.watchlist
-            ) {
-                WatchlistScreen(
-                    onCardClick = { item ->
-                        val type = when (item) {
-                            is Movie -> "movie"
-                            is TvShow -> "tv"
-                            else -> item.media_type ?: "movie"
+            navigation(startDestination = Routes.watchlist, route = Routes.watchlistTab) {
+                composable(Routes.watchlist) {
+                    WatchlistScreen(
+                        onCardClick = { item ->
+                            val type = when (item) {
+                                is Movie -> "movie"
+                                is TvShow -> "tv"
+                                else -> item.media_type ?: "movie"
+                            }
+                            navController.navigate("${Routes.details}/${item.id}/$type")
                         }
-                        navController.navigate("${Routes.details}/${item.id}/$type")
-                    }
-                )
+                    )
+                }
+                detailsScreen(navController)
             }
-            composable(
-                Routes.search
-            ) {
-                SearchScreen(
-                    onCardClick = { item ->
-                        val type = when (item) {
-                            is Movie -> "movie"
-                            is TvShow -> "tv"
-                            else -> item.media_type ?: "movie"
+            navigation(startDestination = Routes.search, route = Routes.searchTab) {
+                composable(Routes.search) {
+                    SearchScreen(
+                        onCardClick = { item ->
+                            val type = when (item) {
+                                is Movie -> "movie"
+                                is TvShow -> "tv"
+                                else -> item.media_type ?: "movie"
+                            }
+                            navController.navigate("${Routes.details}/${item.id}/$type")
                         }
-                        navController.navigate("${Routes.details}/${item.id}/$type")
-                    }
-                )
+                    )
+                }
+                detailsScreen(navController)
             }
-            composable(
-                Routes.genre
-            ) {
-                GenreScreen(
-                    onCardClick = { item ->
-                        val type = when (item) {
-                            is Movie -> "movie"
-                            is TvShow -> "tv"
-                            else -> item.media_type ?: "movie"
+            navigation(startDestination = Routes.genre, route = Routes.genreTab) {
+                composable(Routes.genre) {
+                    GenreScreen(
+                        onCardClick = { item ->
+                            val type = when (item) {
+                                is Movie -> "movie"
+                                is TvShow -> "tv"
+                                else -> item.media_type ?: "movie"
+                            }
+                            navController.navigate("${Routes.details}/${item.id}/$type")
                         }
-                        navController.navigate("${Routes.details}/${item.id}/$type")
-                    }
-                )
+                    )
+                }
+                detailsScreen(navController)
             }
             composable(
                 Routes.settings
