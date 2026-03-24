@@ -10,8 +10,10 @@ import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.data.model.WatchStatus
 import com.dustycube.cinelog.data.repository.CommonRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
@@ -26,6 +28,10 @@ class MediaDetailsViewModel @Inject constructor(
     private val commonRepository: CommonRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+    private val _selectedTabIndex = MutableStateFlow(0)
+    val selectedTabIndex = _selectedTabIndex.asStateFlow()
+    fun updateTabIndex(index: Int) { _selectedTabIndex.value = index }
+
     private val itemId: Int = checkNotNull(savedStateHandle["itemId"])
     private val mediaType: String = checkNotNull(savedStateHandle["media_type"])
 

@@ -20,12 +20,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -33,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.dustycube.cinelog.data.model.Movie
 import com.dustycube.cinelog.data.model.TvShow
 import com.dustycube.cinelog.data.model.WatchItem
@@ -74,6 +75,9 @@ fun DetailsBlock(
     item: WatchItem,
     viewModel: MediaDetailsViewModel
 ) {
+    val tabs = listOf("ABOUT", "EPISODES")
+    val selectedTabIndex by viewModel.selectedTabIndex.collectAsState()
+
     Column(
         modifier = Modifier.fillMaxSize()
             .background(Color(0xFFE8E2DB))
@@ -124,32 +128,59 @@ fun DetailsBlock(
 
             }
         }
-        Card(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 20.dp)
-                .height(80.dp)
-                .fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.LightGray
-            )
-        ) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+        if (item is Movie) AboutItem(item)
+        else if (item is TvShow) {
+            TabRow(
+                selectedTabIndex = selectedTabIndex,
+                containerColor = Color(0xFFE8E2DB)
             ) {
-                CardBlock(item)
+                tabs.forEachIndexed { index, string ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = { viewModel.updateTabIndex(index) },
+                        text = { Text(string, fontWeight = FontWeight.Bold) }
+                    )
+                }
+            }
+            when (selectedTabIndex) {
+                0 -> {
+                    AboutItem(item)
+                    TvShowAboutInfo(item)
+                }
+                1 -> {
+                    TvShowEpisodes(item.number_of_seasons ?: 0)
+                }
             }
         }
-        Text(
-            "Overview:",
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(start = 8.dp)
-        )
-        Text(
-            "${item.overview}",
-            modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp)
-        )
-        if (item is TvShow) TvShowDetailsHelper(item)
     }
+}
+
+@Composable
+fun AboutItem(item: WatchItem) {
+    Card(
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 20.dp)
+            .height(80.dp)
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.LightGray
+        )
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            CardBlock(item)
+        }
+    }
+    Text(
+        "Overview:",
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(start = 8.dp)
+    )
+    Text(
+        "${item.overview}",
+        modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp)
+    )
 }
 
 fun getTitleOrName(item: WatchItem): String? {
