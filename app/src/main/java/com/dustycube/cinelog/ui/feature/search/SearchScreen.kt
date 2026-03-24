@@ -46,7 +46,7 @@ fun SearchScreen(
             .background(Color(0xFFE8E2DB))
     ) {
         BannerHeader(
-            "Search Items",
+            "Search Movies & TV Shows",
             hasIcon = false
         )
         OutlinedTextField(

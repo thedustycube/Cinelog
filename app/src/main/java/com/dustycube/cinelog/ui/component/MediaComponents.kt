@@ -75,7 +75,8 @@ fun CardPoster(
             placeholder = painterResource(R.drawable.no_poster),
             error = painterResource(R.drawable.no_poster),
             fallback = painterResource(R.drawable.no_poster),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .height(200.dp),
                 // .clip(RoundedCornerShape(8.dp))
             contentScale = ContentScale.FillBounds
         )
@@ -134,24 +135,6 @@ fun StatusBox(
 }
 
 @Composable
-fun CardTitle(
-    item: WatchItem
-) {
-    Row(
-        modifier = Modifier
-            .height(40.dp)
-            .fillMaxWidth()
-            .background(Color.Gray)
-    ) {
-        Text(
-            modifier = Modifier.padding(start = 4.dp, top = 4.dp),
-            text = isMovieOrTvShow(item) ?: "",
-            fontWeight = FontWeight.SemiBold
-        )
-    }
-}
-
-@Composable
 fun CardBuilder(
     item: WatchItem,
     onUpdateWatchStatus: (WatchItem, WatchStatus) -> Unit,
@@ -168,7 +151,6 @@ fun CardBuilder(
                     .clickable { onCardClick(item) }
             ) {
                 CardPoster(item, onUpdateWatchStatus, hasStatusBox)
-                // CardTitle(item)
             }
             Spacer(modifier = Modifier.width(4.dp))
         } else {
@@ -179,7 +161,6 @@ fun CardBuilder(
                     .clickable { onCardClick(item) }
             ) {
                 CardPoster(item, onUpdateWatchStatus, hasStatusBox)
-                // CardTitle(item)
             }
         }
     } else {
