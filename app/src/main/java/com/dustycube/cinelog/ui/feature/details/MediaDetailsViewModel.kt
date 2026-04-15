@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dustycube.cinelog.data.model.Movie
+import com.dustycube.cinelog.data.model.Season
 import com.dustycube.cinelog.data.model.TvShow
 import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.data.model.WatchStatus
@@ -45,7 +46,10 @@ class MediaDetailsViewModel @Inject constructor(
         DetailUiState.Success(
             when (item) {
                 is Movie -> item.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
-                is TvShow -> item.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
+                is TvShow -> item.copy(
+                    watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE,
+                    seasons = item.seasons.map { it.copy(showId = itemId) }
+                )
                 else -> null
             }
         )
@@ -61,6 +65,23 @@ class MediaDetailsViewModel @Inject constructor(
     fun onUpdateWatchStatus(item: WatchItem, newStatus: WatchStatus) {
         viewModelScope.launch {
             commonRepository.updateWatchStatus(item, newStatus)
+        }
+    }
+
+    fun updateSeasonStatus(season: Season, newStatus: WatchStatus, progress: Int) {
+        if (progress == 0 || progress < 0 || progress > season.episode_count) {
+            when (newStatus) {
+                WatchStatus.WATCHING -> season.watchStatus = newStatus
+                WatchStatus.COMPLETED -> {
+                    season.watchStatus = newStatus
+                    season.episodeWatched = season.episode_count
+                }
+                else -> {  }
+            }
+        } else if (progress == season.episode_count){
+            season.watchStatus = WatchStatus.COMPLETED
+        } else {
+            season.watchStatus = WatchStatus.WATCHING
         }
     }
 }

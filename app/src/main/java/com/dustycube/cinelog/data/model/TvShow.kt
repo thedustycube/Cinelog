@@ -17,13 +17,9 @@ data class TvShow(
     override val vote_count: Int?,
     override val media_type: String?,
     override val watchStatus: WatchStatus,
-    override val lastUpdatedTimeStamp: LocalDateTime
+    override val lastUpdatedTimeStamp: LocalDateTime,
+    val seasons: List<Season>
 ) : WatchItem
-
-// backdrop_path: String
-// genre_ids: List<Int>
-// origin_country: List<String>
-// original_name: String
 
 data class TrendingTvResponse(
     val results: List<TvShow>

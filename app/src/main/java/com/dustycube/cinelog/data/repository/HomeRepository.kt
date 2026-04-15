@@ -51,7 +51,8 @@ class HomeRepository(
                         trendingTvShow.copy(
                             media_type = "tv",
                             watchStatus = WatchStatus.NONE,
-                            lastUpdatedTimeStamp = LocalDateTime.now()
+                            lastUpdatedTimeStamp = LocalDateTime.now(),
+                            seasons = emptyList()
                         )
                     }
                 }
