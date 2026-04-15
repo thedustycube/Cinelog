@@ -27,3 +27,14 @@ data class WatchlistItemEntity(
     val release_date: String?,
     val watchStatusOrder: Int
 ) : WatchItem
+
+@Entity(
+    tableName = "season_progress",
+    primaryKeys = ["showId", "seasonNumber"]
+)
+data class SeasonProgressEntity(
+    val showId: Int,
+    val seasonNumber: Int,
+    var episodeWatched: Int,
+    var watchStatus: WatchStatus
+)
