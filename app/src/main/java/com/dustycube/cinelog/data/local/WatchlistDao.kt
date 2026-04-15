@@ -24,4 +24,12 @@ interface WatchlistDao {
 
     @Query("DELETE FROM watchlist WHERE id = :id")
     suspend fun removeFromWatchlist(id: Int)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertSeasonProgress(progress: SeasonProgressEntity)
+
+    @Query("SELECT * " +
+        "FROM season_progress " +
+        "WHERE showId = :showId")
+    fun getSeasonProgress(showId: Int): Flow<List<SeasonProgressEntity>>
 }

@@ -10,6 +10,7 @@ import com.dustycube.cinelog.data.model.TvShow
 import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.data.model.WatchStatus
 import com.dustycube.cinelog.data.repository.CommonRepository
+import com.dustycube.cinelog.data.repository.MediaDetailsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,7 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MediaDetailsViewModel @Inject constructor(
     private val commonRepository: CommonRepository,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val mediaDetailsRepository: MediaDetailsRepository
 ) : ViewModel() {
     private val _selectedTabIndex = MutableStateFlow(0)
     val selectedTabIndex = _selectedTabIndex.asStateFlow()
@@ -69,19 +71,12 @@ class MediaDetailsViewModel @Inject constructor(
     }
 
     fun updateSeasonStatus(season: Season, newStatus: WatchStatus, progress: Int) {
-        if (progress == 0 || progress < 0 || progress > season.episode_count) {
-            when (newStatus) {
-                WatchStatus.WATCHING -> season.watchStatus = newStatus
-                WatchStatus.COMPLETED -> {
-                    season.watchStatus = newStatus
-                    season.episodeWatched = season.episode_count
-                }
-                else -> {  }
-            }
-        } else if (progress == season.episode_count){
-            season.watchStatus = WatchStatus.COMPLETED
-        } else {
-            season.watchStatus = WatchStatus.WATCHING
+        viewModelScope.launch {
+            mediaDetailsRepository.updateSeasonProgress(
+                season = season,
+                newStatus = newStatus,
+                progress = progress
+            )
         }
     }
 }

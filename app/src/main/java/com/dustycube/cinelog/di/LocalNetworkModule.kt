@@ -5,6 +5,7 @@ import com.dustycube.cinelog.data.local.WatchlistDao
 import com.dustycube.cinelog.data.repository.CommonRepository
 import com.dustycube.cinelog.data.repository.GenreRepository
 import com.dustycube.cinelog.data.repository.HomeRepository
+import com.dustycube.cinelog.data.repository.MediaDetailsRepository
 import com.dustycube.cinelog.data.repository.SearchRepository
 import com.dustycube.cinelog.data.repository.WatchlistRepository
 import dagger.Module
@@ -17,7 +18,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NetworkModule {
+object LocalNetworkModule {
 
     @Provides
     @Singleton
@@ -58,5 +59,11 @@ object NetworkModule {
     @Singleton
     fun provideGenreRepository(api: TMDBApiService, commonRepository: CommonRepository): GenreRepository {
         return GenreRepository(api, commonRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMediaDetailsRepository(dao: WatchlistDao): MediaDetailsRepository {
+        return MediaDetailsRepository(dao)
     }
 }
