@@ -20,11 +20,6 @@ data class Movie(
     override val lastUpdatedTimeStamp: LocalDateTime
 ) : WatchItem
 
-// backdrop_path: String
-// genre_ids: List<Int>
-// original_title: String
-// video: Boolean
-
 data class TrendingMovieResponse(
     val results: List<Movie>
 )

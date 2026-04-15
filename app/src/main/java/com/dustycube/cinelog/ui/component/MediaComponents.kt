@@ -112,7 +112,6 @@ fun StatusBox(
         Icon(
             imageVector = item.watchStatus.icon,
             contentDescription = item.watchStatus.name
-            // tint = Color(0xFFE8E2DB)
         )
         DropdownMenu(
             modifier = Modifier,
@@ -148,7 +147,8 @@ fun CardBuilder(
                 modifier = Modifier
                     .height(200.dp)
                     .width(120.dp)
-                    .clickable { onCardClick(item) }
+                    .clickable { onCardClick(item) },
+                shape = RoundedCornerShape(8.dp)
             ) {
                 CardPoster(item, onUpdateWatchStatus, hasStatusBox)
             }

@@ -37,7 +37,10 @@ class CommonRepository(
                     val response = api.getTvShowDetailsById(id = itemId)
                     response.copy(
                         watchStatus = WatchStatus.NONE,
-                        lastUpdatedTimeStamp = LocalDateTime.now()
+                        lastUpdatedTimeStamp = LocalDateTime.now(),
+                        seasons = response.seasons.map { season ->
+                            season.copy(watchStatus = WatchStatus.NONE)
+                        }
                     )
                 }
                 else -> {

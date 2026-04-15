@@ -75,7 +75,7 @@ fun DetailsBlock(
     item: WatchItem,
     viewModel: MediaDetailsViewModel
 ) {
-    val tabs = listOf("ABOUT", "EPISODES")
+    val tabs = listOf("ABOUT", "SEASONS")
     val selectedTabIndex by viewModel.selectedTabIndex.collectAsState()
 
     Column(
@@ -148,7 +148,10 @@ fun DetailsBlock(
                     TvShowAboutInfo(item)
                 }
                 1 -> {
-                    TvShowEpisodes(item.number_of_seasons ?: 0)
+                    TvShowSeasons(
+                        item.seasons,
+                        viewModel::updateSeasonStatus
+                    )
                 }
             }
         }
