@@ -1,6 +1,5 @@
 package com.dustycube.cinelog.ui.feature.details
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,11 +15,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,7 +25,7 @@ import javax.inject.Inject
 class MediaDetailsViewModel @Inject constructor(
     private val commonRepository: CommonRepository,
     savedStateHandle: SavedStateHandle,
-    private val mediaDetailsRepository: MediaDetailsRepository
+    private val mediaDetailsRepository: MediaDetailsRepository,
 ) : ViewModel() {
     private val _selectedTabIndex = MutableStateFlow(0)
     val selectedTabIndex = _selectedTabIndex.asStateFlow()
@@ -39,30 +35,41 @@ class MediaDetailsViewModel @Inject constructor(
     private val mediaType: String = checkNotNull(savedStateHandle["media_type"])
 
     val uiState: StateFlow<DetailUiState> = combine(
-        flow {
-            emit(commonRepository.getItemById(itemId, mediaType))
-        },
-        commonRepository.getFullWatchlist()
-    ) { item, watchlistItems ->
+        flow { emit(commonRepository.getItemById(itemId, mediaType)) },
+        commonRepository.getFullWatchlist(),
+        mediaDetailsRepository.getSeasonProgress(itemId)
+    ) { item, watchlistItems, seasonProgress ->
         val savedItem = watchlistItems.find { it.id == itemId }
-        DetailUiState.Success(
-            when (item) {
-                is Movie -> item.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
-                is TvShow -> item.copy(
+
+        val synchronizedItem = when (item) {
+            is TvShow -> {
+                val syncedSeasons = item.seasons.map { apiSeason ->
+                    val localData =
+                        seasonProgress.find { it.seasonNumber == apiSeason.season_number }
+                    apiSeason.copy(
+                        showId = itemId,
+                        episodeWatched = localData?.episodeWatched ?: 0,
+                        watchStatus = localData?.watchStatus ?: WatchStatus.NONE
+                    )
+                }
+                item.copy(
                     watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE,
-                    seasons = item.seasons.map { it.copy(showId = itemId) }
+                    seasons = syncedSeasons
                 )
-                else -> null
             }
-        )
-    }
-        .map<DetailUiState, DetailUiState> { it }
-        .catch { e ->
-            emit(DetailUiState.Error(e.message ?: "Something went wrong"))
-            Log.e("MediaDetailsViewModel", "Failed to get the item. Error: $e")
+
+            is Movie -> item.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
+            else -> null
         }
-        .onStart { emit(DetailUiState.Loading) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), DetailUiState.Loading)
+
+        if (synchronizedItem != null) DetailUiState.Success(synchronizedItem)
+        else DetailUiState.Error("Item not found")
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = DetailUiState.Loading
+    )
+
 
     fun onUpdateWatchStatus(item: WatchItem, newStatus: WatchStatus) {
         viewModelScope.launch {
@@ -70,12 +77,13 @@ class MediaDetailsViewModel @Inject constructor(
         }
     }
 
-    fun updateSeasonStatus(season: Season, newStatus: WatchStatus, progress: Int) {
+    fun updateSeasonStatus(season: Season, newStatus: WatchStatus, progress: Int, show: TvShow) {
         viewModelScope.launch {
             mediaDetailsRepository.updateSeasonProgress(
                 season = season,
                 newStatus = newStatus,
-                progress = progress
+                progress = progress,
+                show = show
             )
         }
     }

@@ -63,7 +63,7 @@ object LocalNetworkModule {
 
     @Provides
     @Singleton
-    fun provideMediaDetailsRepository(dao: WatchlistDao): MediaDetailsRepository {
-        return MediaDetailsRepository(dao)
+    fun provideMediaDetailsRepository(dao: WatchlistDao, commonRepository: CommonRepository): MediaDetailsRepository {
+        return MediaDetailsRepository(dao, commonRepository)
     }
 }

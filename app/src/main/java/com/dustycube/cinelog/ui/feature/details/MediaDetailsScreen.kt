@@ -149,6 +149,7 @@ fun DetailsBlock(
                 }
                 1 -> {
                     TvShowSeasons(
+                        item,
                         item.seasons,
                         viewModel::updateSeasonStatus
                     )

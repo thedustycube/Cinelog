@@ -36,5 +36,6 @@ data class SeasonProgressEntity(
     val showId: Int,
     val seasonNumber: Int,
     var episodeWatched: Int,
+    val episodeCount: Int,
     var watchStatus: WatchStatus
 )

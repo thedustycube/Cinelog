@@ -2,6 +2,7 @@ package com.dustycube.cinelog.data.repository
 
 import com.dustycube.cinelog.BuildConfig
 import com.dustycube.cinelog.data.api.TMDBApiService
+import com.dustycube.cinelog.data.local.SeasonProgressEntity
 import com.dustycube.cinelog.data.local.WatchlistDao
 import com.dustycube.cinelog.data.local.WatchlistItemEntity
 import com.dustycube.cinelog.data.mapper.toEntity
@@ -65,7 +66,22 @@ class CommonRepository(
             )
             else -> return
         }
-        if (newStatus != WatchStatus.NONE) dao.upsertItem(entity)
-        else dao.removeFromWatchlist(item.id)
+        if (newStatus == WatchStatus.COMPLETED && item is TvShow) {
+            val progressList = item.seasons
+                .filter { it.season_number > 0 }
+                .map { season ->
+                    SeasonProgressEntity(
+                        showId = item.id,
+                        seasonNumber = season.season_number,
+                        episodeWatched = season.episode_count,
+                        episodeCount = season.episode_count,
+                        watchStatus = WatchStatus.COMPLETED
+                    )
+                }
+            dao.upsertAllSeasonProgress(progressList)
+            dao.upsertItem(entity)
+        } else if (newStatus != WatchStatus.NONE) {
+            dao.removeFromWatchlist(item.id)
+        } else dao.upsertItem(entity)
     }
 }

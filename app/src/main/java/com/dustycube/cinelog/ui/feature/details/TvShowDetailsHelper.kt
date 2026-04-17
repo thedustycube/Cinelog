@@ -75,55 +75,82 @@ fun TvShowAboutInfo(
 
 @Composable
 fun TvShowSeasons(
+    item: TvShow,
     seasons: List<Season>,
-    seasonUpdateStatus: (Season, WatchStatus, Int) -> Unit = { _, _, _ -> }
+    seasonUpdateStatus: (Season, WatchStatus, Int, TvShow) -> Unit = { _, _, _, _ -> }
 ) {
+    var hasSpecials = false
+
     Column(
         modifier = Modifier.padding(8.dp)
     ) {
         seasons.forEach { season ->
-            Card(
-                modifier = Modifier.fillMaxWidth()
-                    .height(48.dp)
-                    .padding(bottom = 8.dp)
-                    .clickable {  },
-                colors = CardDefaults.cardColors(containerColor = Color.LightGray),
-                shape = RoundedCornerShape(4.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize()
-                        .padding(horizontal = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    season.name?.let {
-                        Text(
-                            text = it
-                        )
-                    }
-                    UpdateSeasonBox(
-                        season = season,
-                        seasonUpdateStatus = seasonUpdateStatus
-                    )
-                }
+            if (season.season_number != 0) {
+                SeasonCardBuilder(item, season, seasonUpdateStatus)
+            } else {
+                hasSpecials = true
             }
+        }
+        if (hasSpecials) {
+            SeasonCardBuilder(
+                item = item,
+                season = seasons[0],
+                seasonUpdateStatus = seasonUpdateStatus
+            )
+        }
+    }
+}
+
+@Composable
+fun SeasonCardBuilder(
+    item: TvShow,
+    season: Season,
+    seasonUpdateStatus: (Season, WatchStatus, Int, TvShow) -> Unit = { _, _, _, _ -> }
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth()
+            .height(48.dp)
+            .padding(bottom = 8.dp)
+            .clickable {  },
+        colors = CardDefaults.cardColors(containerColor = Color.LightGray),
+        shape = RoundedCornerShape(4.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize()
+                .padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            season.name?.let {
+                Text(
+                    text = it
+                )
+            }
+            UpdateSeasonBox(
+                item = item,
+                season = season,
+                currentStatus = season.watchStatus,
+                seasonUpdateStatus = seasonUpdateStatus
+            )
         }
     }
 }
 
 @Composable
 fun UpdateSeasonBox(
+    item: TvShow,
     season: Season,
     currentStatus: WatchStatus = WatchStatus.NONE,
-    seasonUpdateStatus: (Season, WatchStatus, Int) -> Unit = { _, _, _ -> }
+    seasonUpdateStatus: (Season, WatchStatus, Int, TvShow) -> Unit = { _, _, _, _ -> }
 ) {
     val episodesWatched = season.episodeWatched
-    var selectedStatus by remember { mutableStateOf(currentStatus) }
+    var selectedStatus by remember(season) { mutableStateOf(currentStatus) }
     var showDialog by remember { mutableStateOf(false) }
     var showMenu by remember { mutableStateOf(false) }
     val seasonStatus = listOf(WatchStatus.NONE, WatchStatus.WATCHING, WatchStatus.COMPLETED)
-    var progress by remember { mutableIntStateOf(episodesWatched) }
-    var textFieldValue by remember { mutableStateOf(episodesWatched.toString()) }
+    var progress by remember(season) { mutableIntStateOf(episodesWatched) }
+    var textFieldValue by remember(season) { mutableStateOf(episodesWatched.toString()) }
+    val isChanged = selectedStatus != currentStatus || progress != season.episodeWatched
 
     Box(
         modifier = Modifier.wrapContentSize()
@@ -139,7 +166,7 @@ fun UpdateSeasonBox(
     }
     if (showDialog) {
         Dialog(
-            onDismissRequest = {  }
+            onDismissRequest = { showDialog = false }
         ) {
             Card(
                 modifier = Modifier.height(200.dp)
@@ -277,7 +304,7 @@ fun UpdateSeasonBox(
                     ) {
                         TextButton(
                             enabled = true,
-                            onClick = {  },
+                            onClick = { showDialog = false },
                             colors = ButtonColors(containerColor = Color(0XFFF87272), contentColor = Color.White, disabledContentColor = Color.Transparent, disabledContainerColor = Color.Transparent),
                             shape = RoundedCornerShape(8.dp)
                         ) {
@@ -286,11 +313,17 @@ fun UpdateSeasonBox(
                             )
                         }
                         TextButton(
-                            enabled = true,
+                            enabled = isChanged,
                             onClick = {
-                                seasonUpdateStatus(season, selectedStatus, progress)
+                                seasonUpdateStatus(season, selectedStatus, progress, item)
+                                showDialog = false
                             },
-                            colors = ButtonColors(containerColor = Color(0XFF94CBFF), contentColor = Color.White, disabledContentColor = Color.Transparent, disabledContainerColor = Color.Transparent),
+                            colors = ButtonColors(
+                                containerColor = if (isChanged) Color(0XFF94CBFF) else Color.LightGray,
+                                contentColor = Color.White,
+                                disabledContentColor = Color.White.copy(alpha = 0.5f),
+                                disabledContainerColor = Color.LightGray
+                            ),
                             shape = RoundedCornerShape(8.dp)
                         ) {
                             Text(
