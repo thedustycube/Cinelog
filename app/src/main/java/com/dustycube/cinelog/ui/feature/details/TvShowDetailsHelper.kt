@@ -143,13 +143,13 @@ fun UpdateSeasonBox(
     currentStatus: WatchStatus = WatchStatus.NONE,
     seasonUpdateStatus: (Season, WatchStatus, Int, TvShow) -> Unit = { _, _, _, _ -> }
 ) {
-    val episodesWatched = season.episodeWatched
-    var selectedStatus by remember(season) { mutableStateOf(currentStatus) }
     var showDialog by remember { mutableStateOf(false) }
+    val episodesWatched = season.episodeWatched
+    var selectedStatus by remember(season.watchStatus, showDialog) { mutableStateOf(currentStatus) }
     var showMenu by remember { mutableStateOf(false) }
     val seasonStatus = listOf(WatchStatus.NONE, WatchStatus.WATCHING, WatchStatus.COMPLETED)
-    var progress by remember(season) { mutableIntStateOf(episodesWatched) }
-    var textFieldValue by remember(season) { mutableStateOf(episodesWatched.toString()) }
+    var progress by remember(season.episodeWatched, showDialog) { mutableIntStateOf(episodesWatched) }
+    var textFieldValue by remember(season.episodeWatched, showDialog) { mutableStateOf(episodesWatched.toString()) }
     val isChanged = selectedStatus != currentStatus || progress != season.episodeWatched
 
     Box(
@@ -225,6 +225,17 @@ fun UpdateSeasonBox(
                                         },
                                         onClick = {
                                             selectedStatus = status
+                                            when (status) {
+                                                WatchStatus.COMPLETED -> {
+                                                    progress = season.episode_count
+                                                    textFieldValue = season.episode_count.toString()
+                                                }
+                                                WatchStatus.NONE -> {
+                                                    progress = 0
+                                                    textFieldValue = "0"
+                                                }
+                                                else -> {  }
+                                            }
                                             showMenu = false
                                         }
                                     )
@@ -261,11 +272,17 @@ fun UpdateSeasonBox(
                                         if (input.isEmpty()) {
                                             textFieldValue = ""
                                             progress = 0
+                                            selectedStatus = WatchStatus.NONE
                                         } else if (input.all { it.isDigit() } && input.length <= 4) {
                                             val newValue = input.toIntOrNull() ?: 0
                                             val constrainedValue = newValue.coerceIn(0, season.episode_count)
                                             progress = constrainedValue
                                             textFieldValue = constrainedValue.toString()
+                                            selectedStatus = when (progress) {
+                                                season.episode_count -> WatchStatus.COMPLETED
+                                                0 -> WatchStatus.NONE
+                                                else -> WatchStatus.WATCHING
+                                            }
                                         }
                                     },
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -315,7 +332,8 @@ fun UpdateSeasonBox(
                         TextButton(
                             enabled = isChanged,
                             onClick = {
-                                seasonUpdateStatus(season, selectedStatus, progress, item)
+                                val validatedStatus = if (progress == season.episode_count) WatchStatus.COMPLETED else selectedStatus
+                                seasonUpdateStatus(season, validatedStatus, progress, item)
                                 showDialog = false
                             },
                             colors = ButtonColors(

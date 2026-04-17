@@ -66,7 +66,7 @@ class CommonRepository(
             )
             else -> return
         }
-        if (newStatus == WatchStatus.COMPLETED && item is TvShow) {
+        if (item is TvShow && newStatus == WatchStatus.COMPLETED) {
             val progressList = item.seasons
                 .filter { it.season_number > 0 }
                 .map { season ->
@@ -81,7 +81,7 @@ class CommonRepository(
             dao.upsertAllSeasonProgress(progressList)
             dao.upsertItem(entity)
         } else if (newStatus != WatchStatus.NONE) {
-            dao.removeFromWatchlist(item.id)
-        } else dao.upsertItem(entity)
+            dao.upsertItem(entity)
+        } else dao.removeFromWatchlist(item.id)
     }
 }
