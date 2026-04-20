@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Edit
@@ -31,6 +32,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -42,7 +44,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -56,13 +60,15 @@ fun TvShowAboutInfo(
     item: TvShow
 ) {
     Card(
-        modifier = Modifier.wrapContentHeight()
+        modifier = Modifier
+            .wrapContentHeight()
             .fillMaxWidth()
             .padding(8.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Gray)
     ) {
         Column(
-            modifier = Modifier.wrapContentHeight()
+            modifier = Modifier
+                .wrapContentHeight()
                 .padding(start = 8.dp, top = 12.dp, bottom = 12.dp),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center
@@ -107,30 +113,96 @@ fun SeasonCardBuilder(
     season: Season,
     seasonUpdateStatus: (Season, WatchStatus, Int, TvShow) -> Unit = { _, _, _, _ -> }
 ) {
+    var episodesWatched by remember(season.id) { mutableIntStateOf(season.episodeWatched) }
+
     Card(
-        modifier = Modifier.fillMaxWidth()
-            .height(48.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
             .padding(bottom = 8.dp)
-            .clickable {  },
+            .clickable { },
         colors = CardDefaults.cardColors(containerColor = Color.LightGray),
         shape = RoundedCornerShape(4.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxSize()
-                .padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            season.name?.let {
-                Text(
-                    text = it
-                )
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                season.name?.let {
+                    Text(
+                        text = it
+                    )
+                }
+                Row(
+                    modifier = Modifier.wrapContentSize(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .width(100.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .border(1.dp, Color.Black, RoundedCornerShape(4.dp)),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(horizontal = 4.dp),
+                            text = "$episodesWatched/${season.episode_count}",
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Box(
+                            modifier = Modifier
+                                .clip(shape = RoundedCornerShape(topEnd = 4.dp, bottomEnd = 4.dp))
+                                .clickable {
+                                    val nextEpisode = episodesWatched + 1
+                                    if (nextEpisode <= season.episode_count) {
+                                        episodesWatched = nextEpisode
+                                        val validatedStatus =
+                                            if (nextEpisode == season.episode_count) WatchStatus.COMPLETED else season.watchStatus
+                                        seasonUpdateStatus(season, validatedStatus, nextEpisode, item)
+                                    }
+                                }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .background(Color.Black)
+                                    .padding(2.dp),
+                                tint = Color.White
+                            )
+                        }
+                    }
+                    UpdateSeasonBox(
+                        item = item,
+                        season = season,
+                        currentStatus = season.watchStatus,
+                        seasonUpdateStatus = { season, status, progress, show ->
+                            episodesWatched = progress
+                            seasonUpdateStatus(season, status, progress, show)
+                        }
+                    )
+                }
             }
-            UpdateSeasonBox(
-                item = item,
-                season = season,
-                currentStatus = season.watchStatus,
-                seasonUpdateStatus = seasonUpdateStatus
+            val progress = if (season.episode_count > 0) {
+                episodesWatched.toFloat() / season.episode_count.toFloat()
+            } else 0f
+
+            LinearProgressIndicator(
+                progress = { progress },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(4.dp),
+                color = Color.Black,
+                trackColor = Color.Transparent
             )
         }
     }
@@ -153,7 +225,8 @@ fun UpdateSeasonBox(
     val isChanged = selectedStatus != currentStatus || progress != season.episodeWatched
 
     Box(
-        modifier = Modifier.wrapContentSize()
+        modifier = Modifier
+            .wrapContentSize()
             .background(Color.Transparent)
             .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(4.dp))
             .clickable { showDialog = true }
@@ -169,7 +242,8 @@ fun UpdateSeasonBox(
             onDismissRequest = { showDialog = false }
         ) {
             Card(
-                modifier = Modifier.height(200.dp)
+                modifier = Modifier
+                    .height(200.dp)
                     .width(400.dp)
             ) {
                 Column {
@@ -181,7 +255,8 @@ fun UpdateSeasonBox(
                         modifier = Modifier.height(1.dp)
                     )
                     Row(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -190,14 +265,20 @@ fun UpdateSeasonBox(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
                                     .padding(bottom = 4.dp, start = 4.dp),
                                 text = "Status"
                             )
                             TextButton(
                                 onClick = { showMenu = true },
-                                modifier = Modifier.fillMaxWidth()
-                                    .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(8.dp))
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .border(
+                                        width = 1.dp,
+                                        color = Color.Black,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
                             ) {
                                 Box(
                                     modifier = Modifier.fillMaxWidth(),
@@ -247,13 +328,19 @@ fun UpdateSeasonBox(
                             modifier = Modifier.weight(1f)
                         ) {
                             Text(
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
                                     .padding(bottom = 4.dp, start = 4.dp),
                                 text = "Progress"
                             )
                             Row(
-                                modifier = Modifier.wrapContentSize()
-                                    .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(8.dp))
+                                modifier = Modifier
+                                    .wrapContentSize()
+                                    .border(
+                                        width = 1.dp,
+                                        color = Color.Black,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
                             ) {
                                 IconButton(
                                     onClick = {
@@ -286,7 +373,8 @@ fun UpdateSeasonBox(
                                         }
                                     },
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                    modifier = Modifier.width(40.dp)
+                                    modifier = Modifier
+                                        .width(40.dp)
                                         .wrapContentHeight()
                                         .align(Alignment.CenterVertically),
                                     textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
@@ -314,7 +402,8 @@ fun UpdateSeasonBox(
                         }
                     }
                     Row(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
                             .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.Bottom

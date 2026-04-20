@@ -22,7 +22,9 @@ class MediaDetailsRepository(
         )
         if (newStatus == WatchStatus.NONE) {
             when (progress) {
-                0 -> dao.deleteSeasonProgress(show.id, season.season_number)
+                0 -> {
+                    dao.deleteSeasonProgress(show.id, season.season_number)
+                }
                 in 1 until season.episode_count -> {
                     seasonItem.watchStatus = WatchStatus.WATCHING
                     dao.upsertSeasonProgress(seasonItem)
@@ -40,10 +42,12 @@ class MediaDetailsRepository(
                 dao.upsertSeasonProgress(seasonItem)
                 updateSeason(show)
             }
-        } else {
-            seasonItem.episodeWatched = season.episode_count
+        } else if (newStatus == WatchStatus.COMPLETED && progress < season.episode_count) {
+            seasonItem.watchStatus = WatchStatus.WATCHING
             dao.upsertSeasonProgress(seasonItem)
             updateSeason(show)
+        } else {
+            dao.upsertSeasonProgress(seasonItem)
         }
     }
 
