@@ -42,6 +42,7 @@ fun TvShow.toEntity(newStatus: WatchStatus): WatchlistItemEntity {
         original_language = this.original_language ?: "",
         number_of_seasons = this.number_of_seasons ?: 0,
         number_of_episodes = this.number_of_episodes ?: 0,
+        episodeWatched = this.episodesWatched,
         vote_average = this.vote_average,
         vote_count = this.vote_count ?: 0,
         media_type = "tv",

@@ -13,6 +13,7 @@ data class SearchItem(
     override val original_language: String?,
     val number_of_seasons: Int?,
     val number_of_episodes: Int?,
+    val episodesWatched: Int,
     override val media_type: String?,
     override val vote_average: Double?,
     override val vote_count: Int?,

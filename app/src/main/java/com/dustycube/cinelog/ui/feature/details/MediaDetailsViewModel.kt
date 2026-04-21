@@ -54,10 +54,10 @@ class MediaDetailsViewModel @Inject constructor(
                 }
                 item.copy(
                     watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE,
-                    seasons = syncedSeasons
+                    seasons = syncedSeasons,
+                    episodesWatched = savedItem?.episodeWatched ?: 0
                 )
             }
-
             is Movie -> item.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
             else -> null
         }
@@ -77,13 +77,14 @@ class MediaDetailsViewModel @Inject constructor(
         }
     }
 
-    fun updateSeasonStatus(season: Season, newStatus: WatchStatus, progress: Int, show: TvShow) {
+    fun updateSeasonStatus(season: Season, newStatus: WatchStatus, progress: Int, show: TvShow, updatedValue: Int = 0) {
         viewModelScope.launch {
             mediaDetailsRepository.updateSeasonProgress(
                 season = season,
                 newStatus = newStatus,
                 progress = progress,
-                show = show
+                show = show,
+                updatedValue = updatedValue
             )
         }
     }
