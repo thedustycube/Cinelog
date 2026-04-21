@@ -23,6 +23,7 @@ data class WatchlistItemEntity(
     val name: String?,
     val number_of_seasons: Int?,
     val number_of_episodes: Int?,
+    val episodeWatched: Int = 0,
     val director: String?,
     val release_date: String?,
     val watchStatusOrder: Int

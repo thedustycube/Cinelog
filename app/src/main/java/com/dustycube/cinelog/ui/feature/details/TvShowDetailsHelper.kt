@@ -83,9 +83,10 @@ fun TvShowAboutInfo(
 fun TvShowSeasons(
     item: TvShow,
     seasons: List<Season>,
-    seasonUpdateStatus: (Season, WatchStatus, Int, TvShow) -> Unit = { _, _, _, _ -> }
+    seasonUpdateStatus: (Season, WatchStatus, Int, TvShow, Int) -> Unit = { _, _, _, _, _ -> }
 ) {
     var hasSpecials = false
+    val episodesWatched by remember(item, seasons) { mutableIntStateOf(item.episodesWatched) }
 
     Column(
         modifier = Modifier.padding(8.dp)
@@ -104,6 +105,10 @@ fun TvShowSeasons(
                 seasonUpdateStatus = seasonUpdateStatus
             )
         }
+        Text(
+            text = "Total Episodes Watched: $episodesWatched",
+            modifier = Modifier.padding(8.dp)
+        )
     }
 }
 
@@ -111,9 +116,9 @@ fun TvShowSeasons(
 fun SeasonCardBuilder(
     item: TvShow,
     season: Season,
-    seasonUpdateStatus: (Season, WatchStatus, Int, TvShow) -> Unit = { _, _, _, _ -> }
+    seasonUpdateStatus: (Season, WatchStatus, Int, TvShow, Int) -> Unit = { _, _, _, _, _ -> }
 ) {
-    var episodesWatched by remember(season.id) { mutableIntStateOf(season.episodeWatched) }
+    var episodesWatched by remember { mutableIntStateOf(season.episodeWatched) }
 
     Card(
         modifier = Modifier
@@ -165,9 +170,8 @@ fun SeasonCardBuilder(
                                     val nextEpisode = episodesWatched + 1
                                     if (nextEpisode <= season.episode_count) {
                                         episodesWatched = nextEpisode
-                                        val validatedStatus =
-                                            if (nextEpisode == season.episode_count) WatchStatus.COMPLETED else season.watchStatus
-                                        seasonUpdateStatus(season, validatedStatus, nextEpisode, item)
+                                        val validatedStatus = if (nextEpisode == season.episode_count) WatchStatus.COMPLETED else WatchStatus.WATCHING
+                                        seasonUpdateStatus(season, validatedStatus, nextEpisode, item, 1)
                                     }
                                 }
                         ) {
@@ -185,9 +189,9 @@ fun SeasonCardBuilder(
                         item = item,
                         season = season,
                         currentStatus = season.watchStatus,
-                        seasonUpdateStatus = { season, status, progress, show ->
+                        seasonUpdateStatus = { season, status, progress, show, updatedValue ->
                             episodesWatched = progress
-                            seasonUpdateStatus(season, status, progress, show)
+                            seasonUpdateStatus(season, status, progress, show, updatedValue)
                         }
                     )
                 }
@@ -213,7 +217,7 @@ fun UpdateSeasonBox(
     item: TvShow,
     season: Season,
     currentStatus: WatchStatus = WatchStatus.NONE,
-    seasonUpdateStatus: (Season, WatchStatus, Int, TvShow) -> Unit = { _, _, _, _ -> }
+    seasonUpdateStatus: (Season, WatchStatus, Int, TvShow, Int) -> Unit = { _, _, _, _, _ -> }
 ) {
     var showDialog by remember { mutableStateOf(false) }
     val episodesWatched = season.episodeWatched
@@ -315,7 +319,9 @@ fun UpdateSeasonBox(
                                                     progress = 0
                                                     textFieldValue = "0"
                                                 }
-                                                else -> {  }
+                                                else -> {
+
+                                                }
                                             }
                                             showMenu = false
                                         }
@@ -346,6 +352,11 @@ fun UpdateSeasonBox(
                                     onClick = {
                                         progress = (progress - 1).coerceAtLeast(0)
                                         textFieldValue = progress.toString()
+                                        selectedStatus = when (progress) {
+                                            season.episode_count -> WatchStatus.COMPLETED
+                                            0 -> WatchStatus.NONE
+                                            else -> WatchStatus.WATCHING
+                                        }
                                     }
                                 ) {
                                     Icon(
@@ -391,6 +402,11 @@ fun UpdateSeasonBox(
                                     onClick = {
                                         progress = (progress + 1).coerceAtMost(season.episode_count)
                                         textFieldValue = progress.toString()
+                                        selectedStatus = when (progress) {
+                                            season.episode_count -> WatchStatus.COMPLETED
+                                            0 -> WatchStatus.NONE
+                                            else -> WatchStatus.WATCHING
+                                        }
                                     }
                                 ) {
                                     Icon(
@@ -422,7 +438,8 @@ fun UpdateSeasonBox(
                             enabled = isChanged,
                             onClick = {
                                 val validatedStatus = if (progress == season.episode_count) WatchStatus.COMPLETED else selectedStatus
-                                seasonUpdateStatus(season, validatedStatus, progress, item)
+                                val updatedValue = progress - season.episodeWatched
+                                seasonUpdateStatus(season, validatedStatus, progress, item, updatedValue)
                                 showDialog = false
                             },
                             colors = ButtonColors(

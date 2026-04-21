@@ -1,5 +1,6 @@
 package com.dustycube.cinelog.data.repository
 
+import android.util.Log
 import com.dustycube.cinelog.BuildConfig
 import com.dustycube.cinelog.data.api.TMDBApiService
 import com.dustycube.cinelog.data.local.SeasonProgressEntity
@@ -54,18 +55,21 @@ class CommonRepository(
     }
 
     suspend fun updateWatchStatus(
-        item: WatchItem, newStatus: WatchStatus
+        item: WatchItem, newStatus: WatchStatus, updatedValue: Int = 0
     ) {
         val entity = when(item) {
             is Movie -> item.toEntity(newStatus)
-            is TvShow -> item.toEntity(newStatus)
+            is TvShow -> item.toEntity(newStatus).copy(episodeWatched = item.episodesWatched + updatedValue)
             is SearchItem -> item.toEntity(newStatus)
             is WatchlistItemEntity -> item.copy(
                 watchStatus = newStatus,
-                lastUpdatedTimeStamp = LocalDateTime.now()
+                lastUpdatedTimeStamp = LocalDateTime.now(),
+                episodeWatched = item.episodeWatched + updatedValue
             )
             else -> return
         }
+        Log.d("CommonRepository", "updatedValue: $updatedValue")
+        Log.d("CommonRepository", "Entity: ${entity.episodeWatched}")
         if (item is TvShow && newStatus == WatchStatus.COMPLETED) {
             val progressList = item.seasons
                 .filter { it.season_number > 0 }
@@ -83,5 +87,7 @@ class CommonRepository(
         } else if (newStatus != WatchStatus.NONE) {
             dao.upsertItem(entity)
         } else dao.removeFromWatchlist(item.id)
+        Log.d("CommonRepository", "updatedValue: $updatedValue")
+        Log.d("CommonRepository", "Entity: ${entity.episodeWatched}")
     }
 }

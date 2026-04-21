@@ -12,6 +12,7 @@ data class TvShow(
     override val original_language: String?,
     val number_of_seasons: Int?,
     val number_of_episodes: Int?,
+    val episodesWatched: Int = 0,
     val first_air_date: String?,
     override val vote_average: Double?,
     override val vote_count: Int?,
