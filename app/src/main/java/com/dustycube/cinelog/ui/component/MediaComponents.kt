@@ -80,7 +80,7 @@ fun CardPoster(
             fallback = painterResource(R.drawable.no_poster),
             modifier = Modifier.fillMaxWidth()
                 .height(
-                    if (isDetailsAndTvShow) 210.dp else 214.dp
+                    if (isDetailsAndTvShow) 200.dp else 204.dp
                 ),
                 // .clip(RoundedCornerShape(8.dp))
             contentScale = ContentScale.FillBounds
@@ -150,7 +150,7 @@ fun CardBuilder(
         if(isHorizontal) {
             Card(
                 modifier = Modifier
-                    .height(214.dp)
+                    .height(204.dp)
                     .width(120.dp)
                     .clickable { onCardClick(item) },
                 shape = RoundedCornerShape(8.dp)
@@ -205,7 +205,7 @@ fun CardBuilder(
         } else {
             Card(
                 modifier = Modifier
-                    .height(214.dp)
+                    .height(204.dp)
                     .width(120.dp)
                     .clickable { onCardClick(item) }
             ) {
@@ -270,7 +270,7 @@ fun CardBuilder(
     } else {
         Card(
             modifier = Modifier
-                .height(214.dp)
+                .height(204.dp)
                 .width(120.dp)
         ) {
             CardPoster(item, onUpdateWatchStatus, hasStatusBox)
