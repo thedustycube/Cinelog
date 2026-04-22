@@ -1,5 +1,6 @@
 package com.dustycube.cinelog.ui.feature.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -49,7 +50,12 @@ class HomeViewModel @Inject constructor(
     ) { pagingData, watchlistItems ->
         pagingData.map { pagedTvShow ->
             val savedItem = watchlistItems.find { it.id == pagedTvShow.id }
-            pagedTvShow.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
+            Log.d("DEBUG", "id=${pagedTvShow.id} savedEpisodes=${savedItem?.episodesWatched}")
+            pagedTvShow.copy(
+                watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE,
+                episodesWatched = savedItem?.episodesWatched ?: 0,
+                number_of_episodes = savedItem?.number_of_episodes ?: 0
+            )
         }
     }
 

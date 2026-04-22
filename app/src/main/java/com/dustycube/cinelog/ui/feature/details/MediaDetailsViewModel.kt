@@ -55,7 +55,7 @@ class MediaDetailsViewModel @Inject constructor(
                 item.copy(
                     watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE,
                     seasons = syncedSeasons,
-                    episodesWatched = savedItem?.episodeWatched ?: 0
+                    episodesWatched = savedItem?.episodesWatched ?: 0
                 )
             }
             is Movie -> item.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)

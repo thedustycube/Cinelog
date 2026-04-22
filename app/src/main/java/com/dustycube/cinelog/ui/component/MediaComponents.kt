@@ -25,6 +25,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.dustycube.cinelog.R
+import com.dustycube.cinelog.data.local.WatchlistItemEntity
 import com.dustycube.cinelog.data.model.Movie
 import com.dustycube.cinelog.data.model.SearchItem
 import com.dustycube.cinelog.data.model.TvShow
@@ -62,7 +64,8 @@ fun isMovieOrTvShow(item: WatchItem): String? {
 fun CardPoster(
     item: WatchItem,
     onUpdateWatchStatus: (WatchItem, WatchStatus) -> Unit,
-    hasStatusBox: Boolean
+    hasStatusBox: Boolean,
+    isDetailsAndTvShow: Boolean = false
 ) {
     Box {
         AsyncImage(
@@ -76,7 +79,9 @@ fun CardPoster(
             error = painterResource(R.drawable.no_poster),
             fallback = painterResource(R.drawable.no_poster),
             modifier = Modifier.fillMaxWidth()
-                .height(200.dp),
+                .height(
+                    if (isDetailsAndTvShow) 200.dp else 204.dp
+                ),
                 // .clip(RoundedCornerShape(8.dp))
             contentScale = ContentScale.FillBounds
         )
@@ -145,12 +150,56 @@ fun CardBuilder(
         if(isHorizontal) {
             Card(
                 modifier = Modifier
-                    .height(200.dp)
+                    .height(204.dp)
                     .width(120.dp)
                     .clickable { onCardClick(item) },
                 shape = RoundedCornerShape(8.dp)
             ) {
-                CardPoster(item, onUpdateWatchStatus, hasStatusBox)
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    when (item) {
+                        is WatchlistItemEntity -> {
+                            if (item.media_type == "tv") {
+                                CardPoster(item, onUpdateWatchStatus, hasStatusBox, true)
+                                val progress = item.number_of_episodes?.let {
+                                    if (it > 0) {
+                                        item.episodesWatched.toFloat() / item.number_of_episodes.toFloat()
+                                    } else 0f
+                                } ?: 0f
+                                LinearProgressIndicator(
+                                    progress = { progress },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(4.dp),
+                                    color = Color(0xFFFF3131),
+                                    trackColor = Color.Transparent
+                                )
+                            } else CardPoster(item, onUpdateWatchStatus, hasStatusBox)
+                        }
+                        is TvShow -> {
+                            if (item.episodesWatched > 0) {
+                                CardPoster(item, onUpdateWatchStatus, hasStatusBox, true)
+                                val progress = item.number_of_episodes?.let {
+                                    if (it > 0) {
+                                        item.episodesWatched.toFloat() / item.number_of_episodes.toFloat()
+                                    } else 0f
+                                } ?: 0f
+                                LinearProgressIndicator(
+                                    progress = { progress },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(4.dp),
+                                    color = Color(0xFFFF3131),
+                                    trackColor = Color.Transparent
+                                )
+                            } else CardPoster(item, onUpdateWatchStatus, hasStatusBox)
+                        }
+                        else -> {
+                            CardPoster(item, onUpdateWatchStatus, hasStatusBox)
+                        }
+                    }
+                }
             }
             Spacer(modifier = Modifier.width(4.dp))
         } else {
