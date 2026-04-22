@@ -50,7 +50,6 @@ class HomeViewModel @Inject constructor(
     ) { pagingData, watchlistItems ->
         pagingData.map { pagedTvShow ->
             val savedItem = watchlistItems.find { it.id == pagedTvShow.id }
-            Log.d("DEBUG", "id=${pagedTvShow.id} savedEpisodes=${savedItem?.episodesWatched}")
             pagedTvShow.copy(
                 watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE,
                 episodesWatched = savedItem?.episodesWatched ?: 0,

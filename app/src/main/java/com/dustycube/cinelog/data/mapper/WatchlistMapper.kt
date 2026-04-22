@@ -66,6 +66,7 @@ fun SearchItem.toEntity(newStatus: WatchStatus): WatchlistItemEntity {
         original_language = this.original_language ?: "",
         number_of_seasons = if (this.media_type == "tv") this.number_of_seasons else null,
         number_of_episodes = if (this.media_type == "tv") this.number_of_episodes else null,
+        episodesWatched = if (this.media_type == "tv") this.episodesWatched else 0,
         vote_average = this.vote_average,
         vote_count = this.vote_count ?: 0,
         media_type = this.media_type ?: "",

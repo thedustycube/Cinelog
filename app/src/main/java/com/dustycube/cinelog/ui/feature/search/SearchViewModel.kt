@@ -47,7 +47,11 @@ class SearchViewModel @Inject constructor(
     ) { pagingData, watchlistItems ->
         pagingData.map { searchItem ->
             val savedItem = watchlistItems.find { it.id == searchItem.id }
-            searchItem.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
+            searchItem.copy(
+                watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE,
+                episodesWatched = savedItem?.episodesWatched ?: 0,
+                number_of_episodes = savedItem?.number_of_episodes ?: 0
+            )
         }
     }
 

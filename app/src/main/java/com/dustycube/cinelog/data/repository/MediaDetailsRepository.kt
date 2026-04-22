@@ -47,11 +47,13 @@ class MediaDetailsRepository(
                 dao.upsertSeasonProgress(seasonItem)
                 updateSeason(show, finalUpdatedValue)
             }
-        } else if (newStatus == WatchStatus.COMPLETED && progress < season.episode_count) {
-            seasonItem.watchStatus = WatchStatus.WATCHING
-            dao.upsertSeasonProgress(seasonItem)
-            updateSeason(show, finalUpdatedValue)
-        } else {
+        }
+//        else if (newStatus == WatchStatus.COMPLETED && progress < season.episode_count) {
+//            seasonItem.watchStatus = WatchStatus.WATCHING
+//            dao.upsertSeasonProgress(seasonItem)
+//            updateSeason(show, finalUpdatedValue)
+//        }
+        else {
             dao.upsertSeasonProgress(seasonItem)
             updateSeason(show, finalUpdatedValue)
         }
@@ -61,7 +63,7 @@ class MediaDetailsRepository(
         return dao.getSeasonProgress(showId)
     }
 
-    suspend fun updateSeason(show: TvShow, updatedValue: Int, seasonNumber: Int = 0) {
+    suspend fun updateSeason(show: TvShow, updatedValue: Int) {
         val progressList = dao.getSeasonProgress(show.id).first().filter { it.seasonNumber != 0 }
         if(progressList.isEmpty()) {
             commonRepository.updateWatchStatus(show, WatchStatus.NONE, updatedValue)

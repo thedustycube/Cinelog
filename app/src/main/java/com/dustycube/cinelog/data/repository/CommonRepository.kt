@@ -68,8 +68,6 @@ class CommonRepository(
             )
             else -> return
         }
-        Log.d("CommonRepository", "updatedValue: $updatedValue")
-        Log.d("CommonRepository", "Entity: ${entity.episodesWatched}")
         if (item is TvShow && newStatus == WatchStatus.COMPLETED) {
             val progressList = item.seasons
                 .filter { it.season_number > 0 }
@@ -87,7 +85,5 @@ class CommonRepository(
         } else if (newStatus != WatchStatus.NONE) {
             dao.upsertItem(entity)
         } else dao.removeFromWatchlist(item.id)
-        Log.d("CommonRepository", "updatedValue: $updatedValue")
-        Log.d("CommonRepository", "Entity: ${entity.episodesWatched}")
     }
 }

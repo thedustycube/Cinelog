@@ -205,17 +205,72 @@ fun CardBuilder(
         } else {
             Card(
                 modifier = Modifier
-                    .height(200.dp)
+                    .height(204.dp)
                     .width(120.dp)
                     .clickable { onCardClick(item) }
             ) {
-                CardPoster(item, onUpdateWatchStatus, hasStatusBox)
+                if (item is TvShow) {
+                    if (item.episodesWatched > 0) {
+                        CardPoster(item, onUpdateWatchStatus, hasStatusBox, true)
+                        val progress = item.number_of_episodes?.let {
+                            if (it > 0) {
+                                item.episodesWatched.toFloat() / item.number_of_episodes.toFloat()
+                            } else 0f
+                        } ?: 0f
+                        LinearProgressIndicator(
+                            progress = { progress },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(4.dp),
+                            color = Color(0xFFFF3131),
+                            trackColor = Color.Transparent
+                        )
+                    } else CardPoster(item, onUpdateWatchStatus, hasStatusBox)
+                } else if (item is WatchlistItemEntity) {
+                    if (item.media_type == "tv" && item.episodesWatched > 0) {
+                        CardPoster(item, onUpdateWatchStatus, hasStatusBox, true)
+                        val progress = item.number_of_episodes?.let {
+                            if (it > 0) {
+                                item.episodesWatched.toFloat() / item.number_of_episodes.toFloat()
+                            } else 0f
+                        } ?: 0f
+                        LinearProgressIndicator(
+                            progress = { progress },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(4.dp),
+                            color = Color(0xFFFF3131),
+                            trackColor = Color.Transparent
+                        )
+                    } else {
+                        CardPoster(item, onUpdateWatchStatus, hasStatusBox)
+                    }
+                } else if (item is SearchItem) {
+                    if (item.media_type == "tv" && item.episodesWatched > 0) {
+                        CardPoster(item, onUpdateWatchStatus, hasStatusBox, true)
+                        val progress = item.number_of_episodes?.let {
+                            if (it > 0) {
+                                item.episodesWatched.toFloat() / item.number_of_episodes.toFloat()
+                            } else 0f
+                        } ?: 0f
+                        LinearProgressIndicator(
+                            progress = { progress },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(4.dp),
+                            color = Color(0xFFFF3131),
+                            trackColor = Color.Transparent
+                        )
+                    } else {
+                        CardPoster(item, onUpdateWatchStatus, hasStatusBox)
+                    }
+                } else CardPoster(item, onUpdateWatchStatus, hasStatusBox)
             }
         }
     } else {
         Card(
             modifier = Modifier
-                .height(200.dp)
+                .height(204.dp)
                 .width(120.dp)
         ) {
             CardPoster(item, onUpdateWatchStatus, hasStatusBox)
@@ -298,7 +353,7 @@ fun VerticalList(
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             modifier = Modifier.padding(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(24.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             items(watchItems) { item ->
