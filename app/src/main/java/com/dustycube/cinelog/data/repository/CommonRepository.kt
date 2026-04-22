@@ -59,17 +59,17 @@ class CommonRepository(
     ) {
         val entity = when(item) {
             is Movie -> item.toEntity(newStatus)
-            is TvShow -> item.toEntity(newStatus).copy(episodeWatched = item.episodesWatched + updatedValue)
+            is TvShow -> item.toEntity(newStatus).copy(episodesWatched = item.episodesWatched + updatedValue)
             is SearchItem -> item.toEntity(newStatus)
             is WatchlistItemEntity -> item.copy(
                 watchStatus = newStatus,
                 lastUpdatedTimeStamp = LocalDateTime.now(),
-                episodeWatched = item.episodeWatched + updatedValue
+                episodesWatched = item.episodesWatched + updatedValue
             )
             else -> return
         }
         Log.d("CommonRepository", "updatedValue: $updatedValue")
-        Log.d("CommonRepository", "Entity: ${entity.episodeWatched}")
+        Log.d("CommonRepository", "Entity: ${entity.episodesWatched}")
         if (item is TvShow && newStatus == WatchStatus.COMPLETED) {
             val progressList = item.seasons
                 .filter { it.season_number > 0 }
@@ -88,6 +88,6 @@ class CommonRepository(
             dao.upsertItem(entity)
         } else dao.removeFromWatchlist(item.id)
         Log.d("CommonRepository", "updatedValue: $updatedValue")
-        Log.d("CommonRepository", "Entity: ${entity.episodeWatched}")
+        Log.d("CommonRepository", "Entity: ${entity.episodesWatched}")
     }
 }

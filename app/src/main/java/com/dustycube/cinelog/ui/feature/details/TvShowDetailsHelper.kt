@@ -196,10 +196,10 @@ fun SeasonCardBuilder(
                     )
                 }
             }
+
             val progress = if (season.episode_count > 0) {
                 episodesWatched.toFloat() / season.episode_count.toFloat()
             } else 0f
-
             LinearProgressIndicator(
                 progress = { progress },
                 modifier = Modifier
