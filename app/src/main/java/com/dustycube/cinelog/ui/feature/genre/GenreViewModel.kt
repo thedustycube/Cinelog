@@ -1,5 +1,6 @@
 package com.dustycube.cinelog.ui.feature.genre
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -67,17 +68,23 @@ class GenreViewModel @Inject constructor(
     private val pagedTvShows = _selectedTvShowGenre
         .filterNotNull()
         .flatMapLatest { genre ->
+            Log.d("GenreViewModel", "pagedTvShows: ${genre.name} (ID: ${genre.id})")
             genreRepository.getTvShowsByGenrePagingFlow(genre.id)
         }
         .cachedIn(viewModelScope)
-
     val tvShowsByGenre: Flow<PagingData<TvShow>> = combine(
         pagedTvShows,
         commonRepository.getFullWatchlist()
     ) { pagingData, watchlistItems ->
+        Log.d("GenreViewModel", "Combining PagingData with Watchlist. Items in watchlist: ${watchlistItems.size}")
         pagingData.map { pagedTvShow ->
+            Log.d("GenreViewModel", "Mapping TvShow: ${pagedTvShow.name}")
             val savedItem = watchlistItems.find { it.id == pagedTvShow.id }
-            pagedTvShow.copy(watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE)
+            pagedTvShow.copy(
+                watchStatus = savedItem?.watchStatus ?: WatchStatus.NONE,
+                episodesWatched = savedItem?.episodesWatched ?: 0,
+                number_of_episodes = savedItem?.episodesWatched ?: 0
+            )
         }
     }
 

@@ -1,5 +1,6 @@
 package com.dustycube.cinelog.ui.feature.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ fun TrendingMoviesScreen(
                 items(trendingMovies.itemCount) { index ->
                     val searchItem = trendingMovies[index]
                     if (searchItem != null) {
+                        Log.d("TrendingMoviesScreen", "Item: ${searchItem.media_type}")
                         CardBuilder(
                             item = searchItem,
                             onUpdateWatchStatus = viewModel::onUpdateWatchStatus,
