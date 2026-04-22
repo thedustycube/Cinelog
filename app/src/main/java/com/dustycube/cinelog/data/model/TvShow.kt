@@ -19,7 +19,7 @@ data class TvShow(
     override val media_type: String?,
     override val watchStatus: WatchStatus,
     override val lastUpdatedTimeStamp: LocalDateTime,
-    val seasons: List<Season>
+    val seasons: List<Season> = emptyList()
 ) : WatchItem
 
 data class TrendingTvResponse(

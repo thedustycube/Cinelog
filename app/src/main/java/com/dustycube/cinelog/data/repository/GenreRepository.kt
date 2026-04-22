@@ -1,5 +1,6 @@
 package com.dustycube.cinelog.data.repository
 
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -69,11 +70,14 @@ class GenreRepository(
             config = PagingConfig(pageSize = 20),
             pagingSourceFactory = {
                 UniversalPagingSource { page ->
+                    Log.d("GenreViewModel", "API CALL: Fetching TV page $page for genre $genreId")
                     val response = api.getTvShowsByGenre(genreId = genreId, page = page, token = accessToken)
-                    response.results.map { movieByGenre ->
-                        movieByGenre.copy(
+                    Log.d("GenreViewModel", "API SUCCESS: Found ${response.results.size} TV shows")
+                    response.results.map { tvShowByGenre ->
+                        tvShowByGenre.copy(
                             watchStatus = WatchStatus.NONE,
-                            lastUpdatedTimeStamp = LocalDateTime.now()
+                            lastUpdatedTimeStamp = LocalDateTime.now(),
+                            seasons = emptyList()
                         )
                     }
                 }

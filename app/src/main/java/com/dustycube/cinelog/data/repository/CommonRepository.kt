@@ -1,6 +1,5 @@
 package com.dustycube.cinelog.data.repository
 
-import android.util.Log
 import com.dustycube.cinelog.BuildConfig
 import com.dustycube.cinelog.data.api.TMDBApiService
 import com.dustycube.cinelog.data.local.SeasonProgressEntity
