@@ -15,7 +15,7 @@ class MediaDetailsRepository(
     suspend fun updateSeasonProgress(season: Season, newStatus: WatchStatus, progress: Int, show: TvShow, updatedValue: Int = 0) {
         val seasonItem = SeasonProgressEntity(
             showId = show.id,
-            seasonNumber = season.season_number,
+            season_number = season.season_number,
             episodeWatched = progress,
             episodeCount = season.episode_count,
             watchStatus = newStatus
@@ -64,7 +64,7 @@ class MediaDetailsRepository(
     }
 
     suspend fun updateSeason(show: TvShow, updatedValue: Int) {
-        val progressList = dao.getSeasonProgress(show.id).first().filter { it.seasonNumber != 0 }
+        val progressList = dao.getSeasonProgress(show.id).first().filter { it.season_number != 0 }
         if(progressList.isEmpty()) {
             commonRepository.updateWatchStatus(show, WatchStatus.NONE, updatedValue)
             return

@@ -1,7 +1,9 @@
 package com.dustycube.cinelog.data.local
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.data.model.WatchStatus
 import java.time.LocalDateTime
@@ -31,12 +33,40 @@ data class WatchlistItemEntity(
 
 @Entity(
     tableName = "season_progress",
-    primaryKeys = ["showId", "seasonNumber"]
+    primaryKeys = ["showId", "season_number"]
 )
 data class SeasonProgressEntity(
     val showId: Int,
-    val seasonNumber: Int,
+    val season_number: Int,
     var episodeWatched: Int,
     val episodeCount: Int,
     var watchStatus: WatchStatus
 )
+
+@Entity(
+    tableName = "episodes",
+    primaryKeys = ["id"]
+)
+data class EpisodeEntity(
+    val id: Int,
+    val showId: Int,
+    val season_number: Int,
+    val episode_number: Int,
+    val name: String?,
+    val overview: String?,
+    val air_date: String?,
+    val runtime: Int?,
+    val still_path: String?,
+    val isWatched: Boolean = false
+)
+
+data class SeasonWithEpisodes(
+    @Embedded val season: SeasonProgressEntity,
+    @Relation(
+        parentColumn = "showId",
+        entityColumn = "showId"
+    )
+    val episodes: List<EpisodeEntity>
+) {
+    val seasonEpisodes get() = episodes.filter { it.season_number == season.season_number }
+}

@@ -13,4 +13,5 @@ object Routes {
     const val trendingMovies = "trending_movies"
     const val trendingTvShows = "trending_tv_shows"
     const val details = "details"
+    const val seasonDetails = "season_details"
 }

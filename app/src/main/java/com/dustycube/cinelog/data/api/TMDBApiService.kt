@@ -5,6 +5,7 @@ import com.dustycube.cinelog.data.model.GenreResponse
 import com.dustycube.cinelog.data.model.Movie
 import com.dustycube.cinelog.data.model.MovieByGenreResponse
 import com.dustycube.cinelog.data.model.SearchResponse
+import com.dustycube.cinelog.data.model.Season
 import com.dustycube.cinelog.data.model.TrendingMovieResponse
 import com.dustycube.cinelog.data.model.TrendingTvResponse
 import com.dustycube.cinelog.data.model.TvShow
@@ -80,4 +81,12 @@ interface TMDBApiService {
         @Query("language") lang: String = "en-US",
         @Header("Authorization") token: String = accessToken
     ): TvShow
+
+    @GET("tv/{series_id}/season/{season_number}")
+    suspend fun getTvSeasonDetails(
+        @Path("series_id") seriesId: Int,
+        @Path("season_number") seasonNumber: Int,
+        @Query("language") lang: String = "en-US",
+        @Header("Authorization") token: String = accessToken
+    ): Season
 }

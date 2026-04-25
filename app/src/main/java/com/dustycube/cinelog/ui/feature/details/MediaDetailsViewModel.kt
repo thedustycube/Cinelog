@@ -1,5 +1,6 @@
 package com.dustycube.cinelog.ui.feature.details
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -45,11 +46,12 @@ class MediaDetailsViewModel @Inject constructor(
             is TvShow -> {
                 val syncedSeasons = item.seasons.map { apiSeason ->
                     val localData =
-                        seasonProgress.find { it.seasonNumber == apiSeason.season_number }
+                        seasonProgress.find { it.season_number == apiSeason.season_number }
                     apiSeason.copy(
                         showId = itemId,
                         episodeWatched = localData?.episodeWatched ?: 0,
-                        watchStatus = localData?.watchStatus ?: WatchStatus.NONE
+                        watchStatus = localData?.watchStatus ?: WatchStatus.NONE,
+                        episodes = emptyList()
                     )
                 }
                 item.copy(
