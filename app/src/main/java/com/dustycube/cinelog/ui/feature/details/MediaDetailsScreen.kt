@@ -1,5 +1,6 @@
 package com.dustycube.cinelog.ui.feature.details
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dustycube.cinelog.data.model.Movie
+import com.dustycube.cinelog.data.model.Season
 import com.dustycube.cinelog.data.model.TvShow
 import com.dustycube.cinelog.data.model.WatchItem
 import com.dustycube.cinelog.ui.component.CardBuilder
@@ -44,7 +46,8 @@ import java.time.LocalDate
 
 @Composable
 fun MediaDetailsScreen(
-    viewModel: MediaDetailsViewModel = hiltViewModel()
+    viewModel: MediaDetailsViewModel = hiltViewModel(),
+    onSeasonCardClick: (Int, Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -56,7 +59,11 @@ fun MediaDetailsScreen(
         }
         is DetailUiState.Success -> {
             val item = (uiState as DetailUiState.Success).item
-            if (item != null) DetailsBlock(item, viewModel)
+            if (item != null) { DetailsBlock(
+                item = item,
+                viewModel = viewModel,
+                onSeasonCardClick = onSeasonCardClick)
+            }
             else Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(text = "you gay")
             }
@@ -73,11 +80,11 @@ fun MediaDetailsScreen(
 @Composable
 fun DetailsBlock(
     item: WatchItem,
-    viewModel: MediaDetailsViewModel
+    viewModel: MediaDetailsViewModel,
+    onSeasonCardClick: (Int, Int) -> Unit
 ) {
     val tabs = listOf("ABOUT", "SEASONS")
     val selectedTabIndex by viewModel.selectedTabIndex.collectAsState()
-
     Column(
         modifier = Modifier.fillMaxSize()
             .background(Color(0xFFE8E2DB))
@@ -149,9 +156,10 @@ fun DetailsBlock(
                 }
                 1 -> {
                     TvShowSeasons(
-                        item,
-                        item.seasons,
-                        viewModel::updateSeasonStatus
+                        item = item,
+                        seasons = item.seasons,
+                        seasonUpdateStatus = viewModel::updateSeasonStatus,
+                        onSeasonCardClick = onSeasonCardClick
                     )
                 }
             }

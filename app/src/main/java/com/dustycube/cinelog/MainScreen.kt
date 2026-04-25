@@ -1,5 +1,6 @@
 package com.dustycube.cinelog
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -41,6 +42,7 @@ import androidx.navigation.navArgument
 import com.dustycube.cinelog.data.model.Movie
 import com.dustycube.cinelog.data.model.TvShow
 import com.dustycube.cinelog.ui.feature.details.MediaDetailsScreen
+import com.dustycube.cinelog.ui.feature.details.SeasonDetailsScreen
 import com.dustycube.cinelog.ui.feature.genre.GenreScreen
 import com.dustycube.cinelog.ui.feature.home.HomeScreen
 import com.dustycube.cinelog.ui.feature.home.TrendingMoviesScreen
@@ -77,7 +79,22 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 navArgument("media_type") { type = NavType.StringType }
             )
         ) {
-            MediaDetailsScreen()
+            MediaDetailsScreen(
+                onSeasonCardClick = { showId, seasonNumber ->
+                    navController.navigate("${Routes.seasonDetails}/$showId/$seasonNumber")
+                }
+            )
+        }
+        composable(
+            "${Routes.seasonDetails}/{showId}/{season_number}",
+            arguments = listOf(
+                navArgument("showId") { type = NavType.IntType },
+                navArgument("season_number") { type = NavType.IntType }
+            )
+        ) {
+            SeasonDetailsScreen(
+                onBackClick = { navController.popBackStack() }
+            )
         }
     }
 
@@ -191,7 +208,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
                             val type = when (item) {
                                 is Movie -> "movie"
                                 is TvShow -> "tv"
-                                else -> item.media_type ?: "movie"
+                                else -> { item.media_type ?: "movie" }
                             }
                             navController.navigate("${Routes.details}/${item.id}/$type")
                         }

@@ -83,7 +83,8 @@ fun TvShowAboutInfo(
 fun TvShowSeasons(
     item: TvShow,
     seasons: List<Season>,
-    seasonUpdateStatus: (Season, WatchStatus, Int, TvShow, Int) -> Unit = { _, _, _, _, _ -> }
+    seasonUpdateStatus: (Season, WatchStatus, Int, TvShow, Int) -> Unit = { _, _, _, _, _ -> },
+    onSeasonCardClick: (Int, Int) -> Unit
 ) {
     var hasSpecials = false
     val episodesWatched by remember(item, seasons) { mutableIntStateOf(item.episodesWatched) }
@@ -93,7 +94,12 @@ fun TvShowSeasons(
     ) {
         seasons.forEach { season ->
             if (season.season_number != 0) {
-                SeasonCardBuilder(item, season, seasonUpdateStatus)
+                SeasonCardBuilder(
+                    item = item,
+                    season = season,
+                    seasonUpdateStatus = seasonUpdateStatus,
+                    onSeasonCardClick = onSeasonCardClick
+                )
             } else {
                 hasSpecials = true
             }
@@ -102,7 +108,8 @@ fun TvShowSeasons(
             SeasonCardBuilder(
                 item = item,
                 season = seasons[0],
-                seasonUpdateStatus = seasonUpdateStatus
+                seasonUpdateStatus = seasonUpdateStatus,
+                onSeasonCardClick = onSeasonCardClick
             )
         }
         Text(
@@ -116,7 +123,8 @@ fun TvShowSeasons(
 fun SeasonCardBuilder(
     item: TvShow,
     season: Season,
-    seasonUpdateStatus: (Season, WatchStatus, Int, TvShow, Int) -> Unit = { _, _, _, _, _ -> }
+    seasonUpdateStatus: (Season, WatchStatus, Int, TvShow, Int) -> Unit = { _, _, _, _, _ -> },
+    onSeasonCardClick: (Int, Int) -> Unit
 ) {
     var episodesWatched by remember { mutableIntStateOf(season.episodeWatched) }
 
@@ -125,7 +133,7 @@ fun SeasonCardBuilder(
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(bottom = 8.dp)
-            .clickable { },
+            .clickable { onSeasonCardClick(item.id, season.season_number) },
         colors = CardDefaults.cardColors(containerColor = Color.LightGray),
         shape = RoundedCornerShape(4.dp)
     ) {

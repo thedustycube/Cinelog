@@ -4,7 +4,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Upsert
+import com.dustycube.cinelog.data.model.Episode
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -27,9 +29,16 @@ interface WatchlistDao {
     @Query("SELECT * FROM season_progress WHERE showId = :showId")
     fun getSeasonProgress(showId: Int): Flow<List<SeasonProgressEntity>>
 
-    @Query("DELETE FROM season_progress WHERE showId = :showId AND seasonNumber = :seasonNumber")
+    @Query("DELETE FROM season_progress WHERE showId = :showId AND season_number = :seasonNumber")
     suspend fun deleteSeasonProgress(showId: Int, seasonNumber: Int)
 
     @Upsert
     suspend fun upsertAllSeasonProgress(list: List<SeasonProgressEntity>)
+
+    @Upsert
+    suspend fun upsertEpisodes(episodes: List<EpisodeEntity>)
+
+    @Transaction
+    @Query("SELECT * FROM season_progress WHERE showId = :showId AND season_number = :seasonNumber")
+    fun getSeasonWithEpisodes(showId: Int, seasonNumber: Int): Flow<SeasonWithEpisodes>
 }
